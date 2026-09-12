@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mgay Bari 文化導覽 - 狩獵陷阱</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f7f6; color: #333; margin: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding-bottom: 60px; }
+        .card { background: white; border: 1px solid #ddd; padding: 20px; border-radius: 10px; margin-top: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: left; }
+        h1 { font-size: 24px; color: #2c3e50; text-align: center; }
+        h3 { color: #d9534f; margin-bottom: 5px; }
+        .img-placeholder { width: 100%; height: 200px; background-color: #e9ecef; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d; margin-bottom: 15px; border: 2px dashed #ccc; }
+        .btn { padding: 12px 20px; font-size: 16px; margin-top: 10px; cursor: pointer; border: none; border-radius: 5px; width: 100%; font-weight: bold; transition: 0.3s; }
+        .btn-option { background-color: #f8f9fa; color: #333; border: 1px solid #ccc; text-align: left; }
+        .btn-option:hover { background-color: #e2e6ea; }
+        .btn-submit { background-color: #4CAF50; color: white; margin-top: 20px; }
+        
+        /* 表單輸入框樣式 */
+        input[type="text"], select { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+        
+        /* 隱藏區塊的設定 */
+        #reward-section, #success-msg { display: none; }
+
+        /* 頁尾版權宣告 */
+        footer { margin-top: 40px; font-size: 12px; color: #888; text-align: center; padding: 20px 0; border-top: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 頂部標題區 -->
+        <h1>🪤 導覽｜狩獵陷阱體驗</h1>
+        <p style="text-align: center; color: #666;">主題：山林裡的無聲獵人與生態智慧</p>
+
+        <!-- 身分顯示區 -->
+        <div class="card" id="profile-area" style="text-align: center; background-color: #e3f2fd; border-color: #b3e5fc;">
+            <p>🔄 正在載入您的身分...</p>
+        </div>
+
+        <!-- 文化介紹區 -->
+        <div class="card">
+            <div class="img-placeholder">
+                📷 未來這裡可以放傳統陷阱的圖片
+            </div>
+            <h3>太魯閣語：Sluq (狩獵陷阱)</h3>
+            <p style="line-height: 1.6;">傳統陷阱 (Sluq) 展現了太魯閣族人對自然環境與動物習性的深刻了解。製作陷阱不僅需要精巧的手工，更需要仔細觀察獸徑與地形。族人遵循祖訓（Gaya），只取所需，絕不濫捕，並給予山林休養生息的時間，讓大自然的資源得以永續發展。</p>
+        </div>
+
+        <!-- 互動問答區 -->
+        <div class="card" id="quiz-section">
+            <h3 style="color: #007BFF;">💡 隨堂小測驗</h3>
+            <p>請問太魯閣族人在設置傳統陷阱 (Sluq) 時，最重要的是什麼？</p>
+            <button class="btn btn-option" onclick="checkAnswer(false)">A. 設置得越明顯越好，讓動物自己跑過來</button>
+            <button class="btn btn-option" onclick="checkAnswer(true)">B. 仔細觀察獸徑地形，並且只取所需不濫捕</button>
+            <button class="btn btn-option" onclick="checkAnswer(false)">C. 隨便找個空地放著，完全憑運氣就好</button>
+        </div>
+
+        <!-- 答對後跳出的表單區 (預設隱藏) -->
+        <div class="card" id="reward-section" style="background-color: #fff3cd; border-color: #ffeeba;">
+            <h3 style="color: #856404;">🎉 恭喜答對！</h3>
+            <p style="font-size: 14px; color: #666;">您已解鎖通關資格！請留下您的基本資料，前往「族語聊天室」向老師挑戰一句族語，即可兌換精美禮品喔！</p>
+            
+            <label for="userName">真實姓名</label>
+            <input type="text" id="userName" placeholder="請輸入您的姓名">
+
+            <label for="userTribe">您的族別</label>
+            <select id="userTribe">
+                <option value="" disabled selected>請選擇族別</option>
+                <option value="太魯閣族">太魯閣族</option>
+                <option value="阿美族">阿美族</option>
+                <option value="泰雅族">泰雅族</option>
+                <option value="排灣族">排灣族</option>
+                <option value="布農族">布農族</option>
+                <option value="其他原住民族">其他原住民族</option>
+                <option value="漢人/其他">漢人 / 其他</option>
+            </select>
+
+            <button class="btn btn-submit" onclick="submitForm()">送出資料</button>
+        </div>
+
+        <!-- 送出成功訊息 (預設隱藏) -->
+        <div class="card" id="success-msg" style="text-align: center; border-color: #c3e6cb; background-color: #d4edda; color: #155724;">
+            <h3>✅ 資料已成功送出</h3>
+            <p>請前往服務台出示此畫面兌換好禮！</p>
+        </div>
+
+        <!-- 協會版權宣告 -->
+        <footer>
+            © 新北市原住民傳藝射箭推廣協會 所有
+        </footer>
+    </div>
+
+    <!-- 引入 LINE LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        const myLiffId = "2011311323-Wj59NXZK";
+        let globalUserId = "";
+        let globalUserName = "";
+
+        // 1. 初始化 LIFF
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: myLiffId });
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    const profile = await liff.getProfile();
+                    globalUserId = profile.userId;
+                    globalUserName = profile.displayName;
+                    
+                    document.getElementById("profile-area").innerHTML = `
+                        <h3 style="margin: 0; color: #0277bd;">歡迎，${globalUserName}！</h3>
+                        <p style="font-size: 12px; color: #666; margin-top: 5px;">系統識別碼: ${globalUserId}</p>
+                    `;
+                }
+            } catch (err) {
+                console.error("LIFF 載入失敗", err);
+                document.getElementById("profile-area").innerHTML = `<p style="color: red;">載入身分失敗，請使用 LINE 開啟</p>`;
+            }
+        }
+
+        // 2. 檢查答案邏輯
+        function checkAnswer(isCorrect) {
+            if (isCorrect) {
+                // 答對了，隱藏問答區，顯示表單區
+                document.getElementById("quiz-section").style.display = "none";
+                document.getElementById("reward-section").style.display = "block";
+                
+                // 畫面自動滑動到表單位置
+                document.getElementById("reward-section").scrollIntoView({ behavior: "smooth" });
+            } else {
+                alert("哎呀！答案不對喔，請再看一次上面的介紹，再試一次！");
+            }
+        }
+
+        // 3. 送出表單邏輯
+        function submitForm() {
+            const nameInput = document.getElementById("userName").value;
+            const tribeInput = document.getElementById("userTribe").value;
+
+            if (nameInput === "" || tribeInput === "") {
+                alert("請填寫姓名並選擇族別喔！");
+                return;
+            }
+
+            // 這裡未來會發送 API 給 FastAPI 後端，紀錄為 trap 關卡
+            console.log("送出資料：", { userId: globalUserId, realName: nameInput, tribe: tribeInput, point: "trap" });
+
+            // 隱藏表單，顯示成功訊息
+            document.getElementById("reward-section").style.display = "none";
+            document.getElementById("success-msg").style.display = "block";
+        }
+
+        // 網頁載入時啟動
+        initializeLiff();
+    </script>
+</body>
+</html>
