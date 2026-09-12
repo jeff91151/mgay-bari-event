@@ -55,6 +55,11 @@ body{
 
 .wrap{max-width:620px;margin:0 auto;padding:0 20px;}
 
+/* ---------- 活動識別 ---------- */
+.masthead{padding:24px 20px 18px;}
+.masthead img{display:block;height:40px;width:auto;max-width:100%;}
+@media (min-width:480px){ .masthead img{height:48px;} }
+
 /* ---------- 進度 ---------- */
 .progress{display:flex;align-items:center;gap:14px;padding:26px 0 18px;}
 .pips{display:flex;gap:9px;}
@@ -67,6 +72,9 @@ body{
 .term{font-size:clamp(42px,13.5vw,62px);line-height:1;margin:0;font-weight:700;color:var(--red-deep);}
 .term-zh{font-size:21px;font-weight:700;margin:12px 0 0;}
 .story-title{font-size:16px;color:var(--muted);margin:4px 0 0;}
+/* 總覽頁：上方已有 logo，就不再重複 Mgay Bari 大字 */
+header.is-menu .term{display:none;}
+header.is-menu .term-zh{font-size:32px;margin:0;}
 
 /* ---------- 族語關鍵字 ---------- */
 .keys{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0;}
@@ -111,6 +119,8 @@ body{
 .reward .head{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
 .reward h2{font-size:20px;margin:0;}
 .reward .note{color:var(--muted);font-size:15px;margin:0 0 22px;}
+.prefill{font-size:14px;color:var(--red-deep);background:var(--paper);border-left:3px solid var(--red);
+  padding:10px 12px;margin:0 0 20px;line-height:1.6;}
 label{display:block;font-size:14px;font-weight:700;margin-bottom:6px;}
 input[type=text],select{width:100%;min-height:54px;padding:13px 14px;margin-bottom:18px;
   border:1.5px solid var(--line);background:var(--paper);color:var(--ink);
@@ -192,11 +202,15 @@ footer{margin-top:40px;padding:18px 0 44px;font-size:12px;color:var(--muted);tex
   </pattern>
 </defs></svg>
 
+<div class="wrap masthead">
+  <img src="mgay-bari-logo.png" alt="Mgay Bari" width="1000" height="147">
+</div>
+
 <svg class="band" aria-hidden="true" focusable="false"><rect width="100%" height="34" fill="url(#pat-band)"/></svg>
 
 <div class="wrap">
   <div class="progress" id="progress"></div>
-  <header>
+  <header id="header">
     <h1 class="term truku" id="term">Mgay Bari</h1>
     <p class="term-zh" id="term-zh"></p>
     <p class="story-title" id="story-title"></p>
@@ -389,6 +403,12 @@ function setWho(cls, text){
 function loadDone(){ try{ return JSON.parse(localStorage.getItem("mb_done_v1")||"[]"); }catch(e){ return []; } }
 function markDone(k){ try{ const a=loadDone(); if(!a.includes(k)){ a.push(k); localStorage.setItem("mb_done_v1",JSON.stringify(a)); } }catch(e){} }
 
+/* 記住姓名與族別，第二站之後自動帶入 */
+function loadProfile(){ try{ return JSON.parse(localStorage.getItem("mb_profile_v1")||"{}"); }catch(e){ return {}; } }
+function saveProfile(realName, tribe){
+  try{ localStorage.setItem("mb_profile_v1", JSON.stringify({realName, tribe})); }catch(e){}
+}
+
 /* ============================================================
    5. 畫面
    ============================================================ */
@@ -410,8 +430,10 @@ function renderStage(){
   const key = state.stage, s = STAGES[key];
   const done = loadDone().includes(key);
   const locked = REQUIRE_SCAN && !state.scanned && !done;
+  const prof = loadProfile();
 
   renderProgress(key);
+  $("header").className = "";
   $("term").textContent = s.term;
   $("term-zh").textContent = s.termZh;
   $("story-title").textContent = s.storyTitle;
@@ -445,12 +467,13 @@ function renderStage(){
       <section class="reward hidden" id="reward">
         <div class="head">${eyeSVG(46)}<h2>答對了</h2></div>
         <p class="note">留下基本資料，就完成這一站的集章。</p>
+        ${prof.realName ? `<p class="prefill">已帶入你上一站填的資料，直接按送出就好。要改也可以。</p>` : ""}
         <label for="userName">真實姓名</label>
-        <input type="text" id="userName" autocomplete="name" placeholder="請輸入您的姓名">
+        <input type="text" id="userName" autocomplete="name" placeholder="請輸入您的姓名" value="${esc(prof.realName||"")}">
         <label for="userTribe">您的族別</label>
         <select id="userTribe">
-          <option value="" disabled selected>請選擇族別</option>
-          ${TRIBES.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join("")}
+          <option value=""${prof.tribe ? "" : " selected"} disabled>請選擇族別</option>
+          ${TRIBES.map(t=>`<option value="${esc(t)}"${prof.tribe===t?" selected":""}>${esc(t)}</option>`).join("")}
         </select>
         <button class="btn" id="send">送出資料</button>
         <p class="err hidden" id="formErr"></p>
@@ -478,6 +501,7 @@ function renderStage(){
 function renderMenu(){
   renderProgress(null);
   const done = loadDone();
+  $("header").className = "is-menu";
   $("term").textContent = "Mgay Bari";
   $("term-zh").textContent = "太魯閣歲時祭儀";
   $("story-title").textContent = "六個導覽點，掃描現場的 QR Code 開始";
@@ -569,6 +593,7 @@ async function submit(){
       console.log("尚未設定 API_BASE，將送出的資料：", payload);
     }
     markDone(state.stage);
+    saveProfile(name, tribe);
     renderDone(name);
   } catch(e){
     console.error(e);
