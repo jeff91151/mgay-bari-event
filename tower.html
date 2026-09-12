@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mgay Bari 文化導覽 - 瞭望台</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background-color: #f4f6f8; 
+            color: #333;
+            margin: 0;
+        }
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .card { 
+            background: white; 
+            border: 1px solid #eaeaea; 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        }
+        .truku-word {
+            color: #d9534f;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .btn { 
+            padding: 12px 20px; 
+            font-size: 16px; 
+            margin-top: 15px; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 8px; 
+            width: 100%;
+            transition: opacity 0.2s;
+        }
+        .btn:active {
+            opacity: 0.8;
+        }
+        .btn-audio { 
+            background-color: #007BFF; 
+            color: white; 
+            font-weight: bold;
+        }
+        .btn-checkin { 
+            background-color: #4CAF50; 
+            color: white; 
+            font-weight: bold; 
+        }
+        .profile-info {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .user-id {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            word-break: break-all;
+        }
+        #error-msg {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏕️ 導覽 1｜瞭望台</h1>
+    <p class="subtitle">主題：部落的眼睛：守護家園的第一道防線</p>
+
+    <!-- 族語學習與文化介紹區 -->
+    <div class="card">
+        <div class="truku-word">太魯閣語：DAKA</div>
+        <p>站在高處瞭望、守護部落安全</p>
+        <p style="text-align: left; font-size: 14px; color: #555; line-height: 1.6;">
+            瞭望台（Puyiq）是部落重要的防禦設施。過去族人會在部落入口或制高點設置瞭望台，由青年輪值守望，觀察周遭環境與風吹草動。
+        </p>
+        <!-- 音檔播放按鈕 (目前先用 alert 模擬) -->
+        <button class="btn btn-audio" onclick="alert('之後這裡會連動 mp3 音檔喔！')">🔊 聽聽看發音</button>
+    </div>
+
+    <!-- 數位集章身分與打卡區 -->
+    <div class="card" id="profile-area">
+        <p>🔄 正在開啟 LINE 驗證你的身分...</p>
+    </div>
+
+    <!-- 引入 LINE LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        // 你的專屬 LIFF ID
+        const myLiffId = "2011311323-Wj59NXZK";
+
+        async function initializeLiff() {
+            try {
+                // 1. 初始化 LIFF
+                await liff.init({ liffId: myLiffId });
+                
+                // 2. 檢查使用者是否已經登入 LINE
+                if (!liff.isLoggedIn()) {
+                    // 如果沒有登入，將網頁導向 LINE 的登入畫面
+                    liff.login();
+                } else {
+                    // 3. 已經登入，開始抓取使用者的 LINE 檔案資料
+                    const profile = await liff.getProfile();
+                    const userId = profile.userId;
+                    const displayName = profile.displayName;
+
+                    // 4. 將抓取到的名字和 ID 更新到畫面上，視覺化打卡成功結果！
+                    document.getElementById("profile-area").innerHTML = `
+                        <p class="profile-info">歡迎來到瞭望台，${displayName}！</p>
+                        <p class="user-id">系統識別碼: ${userId}</p>
+                        <button class="btn btn-checkin" onclick="alert('集章訊號已發送！')">✅ 完成瞭望台打卡</button>
+                    `;
+
+                    // 💡 備註：未來實作 FastAPI 後，會在這裡加一段 fetch API 程式碼
+                    // 把 userId 跟關卡代號 (例如 point: 'tower') POST 給後端 SQLite 紀錄
+                }
+            } catch (err) {
+                console.error("LIFF 初始化失敗", err);
+                document.getElementById("profile-area").innerHTML = `
+                    <p id="error-msg">⚠️ 載入失敗！<br>請確認您是使用手機的 LINE App 開啟此網頁。</p>
+                `;
+            }
+        }
+
+        // 當網頁載入完成後，立刻執行初始化函式
+        window.onload = function() {
+            initializeLiff();
+        };
+    </script>
+</body>
+</html>
