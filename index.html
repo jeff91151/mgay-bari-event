@@ -3,204 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#9E2A21">
-<title>Mgay Bari 文化導覽</title>
+<meta name="theme-color" content="#96271F">
+<title>Mgay Bari｜太魯閣歲時祭儀 數位導覽</title>
 
 <!-- ==========================================================
-     Mgay Bari 太魯閣族文化導覽與數位集章系統
-     單一 index.html + Query Parameter 切換 5 個關卡
+     10/3 太魯閣歲時祭儀 — 數位文化導覽與集章
+     單一 index.html，用 ?stage= 參數切換 6 個導覽點
 
-     QR Code 網址格式：
-       https://liff.line.me/2011311323-Wj59NXZK?stage=archery
-       https://liff.line.me/2011311323-Wj59NXZK?stage=trap
-       https://liff.line.me/2011311323-Wj59NXZK?stage=tower
-       https://liff.line.me/2011311323-Wj59NXZK?stage=house
-       https://liff.line.me/2011311323-Wj59NXZK?stage=weaving
+     QR Code 網址：
+       https://liff.line.me/2011311323-Wj59NXZK?stage=tower     瞭望台
+       https://liff.line.me/2011311323-Wj59NXZK?stage=house     家屋
+       https://liff.line.me/2011311323-Wj59NXZK?stage=archery   射箭狩獵
+       https://liff.line.me/2011311323-Wj59NXZK?stage=trap      陷阱
+       https://liff.line.me/2011311323-Wj59NXZK?stage=weaving   織布
+       https://liff.line.me/2011311323-Wj59NXZK?stage=mgaybari  歲時祭儀
 
-     除錯用：任何網址後面加 &debug=1 會在頁尾顯示環境資訊
+     除錯：網址加 &debug=1
      ========================================================== -->
 
 <style>
 :root{
-  --bone:#F3EFE6;      /* 苧麻本色，頁面底 */
+  --bone:#F2EEE3;      /* 苧麻本色 */
   --paper:#FFFFFF;
-  --ink:#16120F;
-  --red:#9E2A21;       /* 茜草紅，織紋主色 */
-  --red-deep:#7A1F18;
-  --forest:#2F5D3A;    /* 答對 */
-  --muted:#6B6258;
-  --line:#DDD6C7;
-  --warm:#FBF4E4;      /* 表單區 */
-  --radius:4px;
+  --ink:#1A1512;
+  --red:#96271F;       /* 茜草紅 */
+  --red-deep:#741D17;
+  --forest:#2E5A38;
+  --muted:#6E6559;
+  --line:#DCD4C3;
+  --warm:#FAF3E2;
 }
-
 *{box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
 body{
-  margin:0;
-  background:var(--bone);
-  color:var(--ink);
+  margin:0;background:var(--bone);color:var(--ink);
   font-family:"PingFang TC","Noto Sans TC","Heiti TC","Microsoft JhengHei",system-ui,sans-serif;
-  font-size:17px;
-  line-height:1.75;
+  font-size:17px;line-height:1.8;
 }
-.serif{font-family:"Songti TC","Noto Serif TC","Source Han Serif TC",serif;}
+/* 族語（拉丁字母）專用襯線體，和中文黑體明確區隔 */
+.truku{font-family:Georgia,"Iowan Old Style",Palatino,"Times New Roman",serif;}
 
-/* ---- 菱形織紋帶：全站唯一的視覺重點 ---- */
-.weave{
-  height:16px;
-  background-color:var(--bone);
-  background-image:
-    repeating-linear-gradient( 45deg, var(--red) 0 2px, transparent 2px 8px),
-    repeating-linear-gradient(-45deg, var(--red) 0 2px, transparent 2px 8px),
-    repeating-linear-gradient( 45deg, var(--ink) 5px 6px, transparent 6px 16px),
-    repeating-linear-gradient(-45deg, var(--ink) 5px 6px, transparent 6px 16px);
-  border-top:2px solid var(--ink);
-  border-bottom:2px solid var(--ink);
-}
+/* ---------- 菱形紋 ---------- */
+.p-bg{fill:var(--bone);}
+.p-ink{fill:var(--ink);}
+.p-eye{fill:var(--bone);}
+.p-out{fill:none;stroke:var(--red);stroke-width:2.2;}
+.p-tri{fill:var(--red);}
+.p-rule{fill:none;stroke:var(--red);stroke-width:1.3;}
+.band{display:block;width:100%;height:34px;}
+.rule{display:block;width:100%;height:14px;margin:34px 0 26px;}
 
-.wrap{max-width:620px;margin:0 auto;padding:0 20px 48px;}
+.wrap{max-width:620px;margin:0 auto;padding:0 20px;}
 
-/* ---- 頁首：族語是主角 ---- */
-header{padding:28px 0 22px;}
-.stage-count{font-size:14px;letter-spacing:.05em;color:var(--muted);margin:0 0 10px;}
-.term{
-  font-size:clamp(40px,13vw,60px);
-  line-height:1.05;
-  margin:0;
-  font-weight:700;
-  color:var(--red-deep);
-  letter-spacing:-.01em;
-}
-.term-zh{font-size:20px;margin:8px 0 0;font-weight:600;}
-.subtitle{margin:6px 0 0;color:var(--muted);font-size:15px;}
+/* ---------- 進度 ---------- */
+.progress{display:flex;align-items:center;gap:14px;padding:26px 0 18px;}
+.pips{display:flex;gap:9px;}
+.pip{width:11px;height:11px;transform:rotate(45deg);border:1.5px solid var(--line);background:transparent;}
+.pip.done{background:var(--red);border-color:var(--red);}
+.pip.now{background:var(--ink);border-color:var(--ink);}
+.progress .label{font-size:13px;color:var(--muted);letter-spacing:.03em;}
 
-/* ---- 身分列 ---- */
-.who{
-  display:flex;align-items:center;gap:10px;
-  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  padding:12px 0;margin-bottom:26px;font-size:15px;
-}
-.who .dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none;}
+/* ---------- 標題 ---------- */
+.term{font-size:clamp(42px,13.5vw,62px);line-height:1;margin:0;font-weight:700;color:var(--red-deep);}
+.term-zh{font-size:21px;font-weight:700;margin:12px 0 0;}
+.story-title{font-size:16px;color:var(--muted);margin:4px 0 0;}
+
+/* ---------- 族語關鍵字 ---------- */
+.keys{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0;}
+.key{border:1px solid var(--line);background:var(--paper);padding:6px 11px;font-size:14px;line-height:1.5;}
+.key b{color:var(--red);font-weight:700;font-size:15px;}
+
+/* ---------- 身分 ---------- */
+.who{border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:11px 0;margin:22px 0 28px;font-size:14px;color:var(--muted);
+  display:flex;align-items:center;gap:9px;}
+.who .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none;}
 .who.ok .dot{background:var(--forest);}
-.who.warn .dot{background:#B8860B;}
-.who .uid{display:block;font-size:11px;color:var(--muted);word-break:break-all;line-height:1.4;}
+.who.warn .dot{background:#B07A12;}
 
-/* ---- 文化介紹：直接放在頁面上，不裝進卡片 ---- */
-.photo{
-  width:100%;aspect-ratio:16/10;object-fit:cover;
-  border:2px solid var(--ink);border-radius:var(--radius);display:block;margin-bottom:20px;
-}
-.photo-empty{
-  width:100%;aspect-ratio:16/10;border:2px dashed var(--line);border-radius:var(--radius);
-  display:flex;align-items:center;justify-content:center;text-align:center;
-  color:var(--muted);font-size:14px;padding:16px;margin-bottom:20px;background:#EDE8DC;
-}
-.intro p{margin:0 0 16px;}
+/* ---------- 內容 ---------- */
+.photo{width:100%;aspect-ratio:16/10;object-fit:cover;border:2px solid var(--ink);display:block;margin-bottom:22px;}
+.photo-empty{width:100%;aspect-ratio:16/10;border:2px dashed var(--line);background:#E8E2D4;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;
+  color:var(--muted);font-size:14px;margin-bottom:22px;}
+.intro p{margin:0 0 18px;}
 .intro p:last-child{margin-bottom:0;}
 
-/* ---- 小測驗 ---- */
-.quiz{
-  background:var(--paper);border:2px solid var(--ink);border-radius:var(--radius);
-  padding:22px 20px;margin-top:32px;
-}
-.quiz h2{font-size:15px;margin:0 0 4px;color:var(--red);font-weight:700;}
-.question{font-size:18px;font-weight:600;margin:0 0 18px;line-height:1.6;}
-.opt{
-  display:flex;gap:12px;align-items:flex-start;width:100%;
-  min-height:56px;padding:14px 16px;margin-bottom:10px;
-  background:var(--bone);color:var(--ink);
-  border:1.5px solid var(--line);border-radius:var(--radius);
-  font:inherit;font-size:16px;line-height:1.5;text-align:left;cursor:pointer;
-}
+/* ---------- 測驗 ---------- */
+.quiz{background:var(--paper);border:2px solid var(--ink);padding:24px 20px;}
+.quiz h2{font-size:15px;margin:0 0 6px;color:var(--red);font-weight:700;}
+.question{font-size:18px;font-weight:600;line-height:1.65;margin:0 0 20px;}
+.opt{display:flex;gap:13px;align-items:flex-start;width:100%;min-height:58px;
+  padding:15px 16px;margin-bottom:10px;background:var(--bone);color:var(--ink);
+  border:1.5px solid var(--line);font:inherit;font-size:16px;line-height:1.55;
+  text-align:left;cursor:pointer;}
 .opt:last-of-type{margin-bottom:0;}
-.opt .mark{font-weight:700;color:var(--red);flex:none;}
+.opt .mk{font-weight:700;color:var(--red);flex:none;}
 .opt:hover:not(:disabled){border-color:var(--ink);}
 .opt:focus-visible{outline:3px solid var(--red);outline-offset:2px;}
-.opt:disabled{cursor:default;opacity:.55;}
-.opt.is-wrong{background:#EFE7DC;border-color:var(--muted);opacity:1;}
-.opt.is-wrong .mark{color:var(--muted);}
-.feedback{margin:14px 0 0;font-size:15px;color:var(--muted);min-height:1px;}
+.opt:disabled{cursor:default;}
+.opt.wrong{background:#E9E2D6;border-color:var(--muted);color:var(--muted);}
+.opt.wrong .mk{color:var(--muted);}
+.feedback{margin:15px 0 0;font-size:15px;color:var(--muted);}
 
-/* ---- 答對後的表單 ---- */
-.reward{
-  background:var(--warm);border:2px solid var(--red);border-radius:var(--radius);
-  padding:22px 20px;margin-top:24px;
-}
-.stamp{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
-.stamp-mark{
-  width:44px;height:44px;flex:none;border:2px solid var(--red);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;color:var(--red);
-  font-size:20px;transform:rotate(-12deg);
-}
-.reward h2{font-size:19px;margin:0;}
-.reward .note{font-size:15px;color:var(--muted);margin:6px 0 20px;}
-label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;}
-input[type=text],select{
-  width:100%;min-height:52px;padding:12px 14px;margin-bottom:18px;
-  border:1.5px solid var(--line);border-radius:var(--radius);
-  background:var(--paper);color:var(--ink);font:inherit;font-size:16px;
-}
+/* ---------- 表單 ---------- */
+.reward{background:var(--warm);border:2px solid var(--red);padding:24px 20px;}
+.reward .head{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.reward h2{font-size:20px;margin:0;}
+.reward .note{color:var(--muted);font-size:15px;margin:0 0 22px;}
+label{display:block;font-size:14px;font-weight:700;margin-bottom:6px;}
+input[type=text],select{width:100%;min-height:54px;padding:13px 14px;margin-bottom:18px;
+  border:1.5px solid var(--line);background:var(--paper);color:var(--ink);
+  font:inherit;font-size:16px;border-radius:0;-webkit-appearance:none;appearance:none;}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 24px,calc(100% - 14px) 24px;background-size:6px 6px;background-repeat:no-repeat;}
 input[type=text]:focus,select:focus{outline:3px solid var(--red);outline-offset:1px;border-color:var(--red);}
-.btn-send{
-  width:100%;min-height:58px;border:none;border-radius:var(--radius);
-  background:var(--red);color:#fff;font:inherit;font-size:18px;font-weight:700;cursor:pointer;
-}
-.btn-send:hover:not(:disabled){background:var(--red-deep);}
-.btn-send:focus-visible{outline:3px solid var(--ink);outline-offset:2px;}
-.btn-send:disabled{background:var(--muted);cursor:wait;}
-.err{color:var(--red);font-size:15px;margin:12px 0 0;}
+.btn{width:100%;min-height:58px;border:none;background:var(--red);color:#fff;
+  font:inherit;font-size:18px;font-weight:700;cursor:pointer;}
+.btn:hover:not(:disabled){background:var(--red-deep);}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;}
+.btn:disabled{background:var(--muted);cursor:wait;}
+.btn-ghost{width:100%;min-height:52px;background:transparent;border:1.5px solid var(--ink);
+  color:var(--ink);font:inherit;font-size:16px;font-weight:600;cursor:pointer;margin-top:22px;}
+.btn-ghost:hover{background:var(--ink);color:var(--bone);}
+.err{color:var(--red);font-size:15px;margin:13px 0 0;font-weight:600;}
 
-/* ---- 送出成功 ---- */
-.done{text-align:center;padding:34px 20px;margin-top:24px;
-  border:2px solid var(--forest);border-radius:var(--radius);background:var(--paper);}
-.done h2{margin:0 0 6px;font-size:22px;color:var(--forest);}
-.done p{margin:0;color:var(--muted);font-size:15px;}
-.done .big{font-size:26px;color:var(--ink);margin:14px 0 4px;font-weight:700;}
+/* ---------- 完成 ---------- */
+.done{text-align:center;padding:8px 0 0;}
+.done .eye{margin:0 auto 6px;display:block;}
+.done h2{margin:0;font-size:22px;color:var(--forest);}
+.done .name{font-size:28px;font-weight:700;margin:10px 0 2px;}
+.done .sub{color:var(--muted);font-size:15px;margin:0;}
+.next{border:2px solid var(--ink);background:var(--paper);padding:22px 20px;margin-top:30px;text-align:left;}
+.next h3{margin:0 0 8px;font-size:18px;}
+.next p{margin:0;color:var(--muted);font-size:15px;}
 
-/* ---- 關卡總覽 ---- */
-.menu-item{
-  display:block;padding:18px 0;border-bottom:1px solid var(--line);
-  color:var(--ink);text-decoration:none;
-}
+/* ---------- 族語片語 ---------- */
+.phrase{background:var(--ink);color:var(--bone);padding:24px 20px;margin-top:14px;text-align:left;}
+.phrase .cap{font-size:13px;color:#B9AE9B;margin:0 0 12px;}
+.phrase .tw{font-size:26px;line-height:1.35;margin:0;font-weight:700;color:#fff;}
+.phrase .zh{font-size:17px;margin:8px 0 0;color:#D8CEBC;}
+.phrase button{margin-top:18px;background:transparent;border:1.5px solid #6F6558;color:var(--bone);
+  font:inherit;font-size:15px;min-height:46px;padding:0 18px;cursor:pointer;}
+.phrase button:hover{border-color:var(--bone);}
+
+/* ---------- 總覽 ---------- */
+.menu-item{display:flex;align-items:center;gap:14px;width:100%;padding:18px 0;
+  border:none;border-bottom:1px solid var(--line);background:transparent;
+  font:inherit;text-align:left;cursor:pointer;color:var(--ink);}
 .menu-item:first-of-type{border-top:1px solid var(--line);}
-.menu-item .t{font-size:24px;font-weight:700;color:var(--red-deep);}
-.menu-item .z{font-size:15px;color:var(--muted);}
+.menu-item .n{flex:1;}
+.menu-item .t{display:block;font-size:25px;font-weight:700;color:var(--red-deep);line-height:1.2;}
+.menu-item .z{display:block;font-size:15px;color:var(--muted);}
+.menu-item .st{flex:none;font-size:13px;color:var(--muted);}
+.menu-item .st.ok{color:var(--forest);font-weight:700;}
 
-.backlink{display:inline-block;margin-top:24px;color:var(--red);font-size:15px;}
+.locked{background:var(--paper);border:2px dashed var(--line);padding:24px 20px;text-align:center;}
+.locked p{margin:0 0 4px;font-weight:700;}
+.locked span{color:var(--muted);font-size:15px;}
 
-footer{
-  border-top:1px solid var(--line);margin-top:44px;padding-top:18px;
-  font-size:12px;color:var(--muted);text-align:center;line-height:1.7;
-}
-#debug{
-  display:none;margin-top:14px;padding:12px;background:#EDE8DC;border-radius:var(--radius);
-  font-family:ui-monospace,Menlo,monospace;font-size:11px;text-align:left;word-break:break-all;
-}
-
+footer{margin-top:40px;padding:18px 0 44px;font-size:12px;color:var(--muted);text-align:center;line-height:1.8;}
+#debug{display:none;margin-top:14px;padding:12px;background:#E8E2D4;text-align:left;
+  font-family:ui-monospace,Menlo,monospace;font-size:11px;word-break:break-all;white-space:pre-wrap;}
 .hidden{display:none !important;}
 
-@keyframes press{from{transform:scale(.94) rotate(-12deg);opacity:0;}to{transform:scale(1) rotate(-12deg);opacity:1;}}
-.stamp-mark{animation:press .35s ease-out;}
-@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
+@keyframes bloom{from{opacity:0;transform:scale(.88);}to{opacity:1;transform:scale(1);}}
+.done .eye{animation:bloom .45s ease-out;}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;}}
 </style>
 </head>
 
 <body>
-<div class="weave" aria-hidden="true"></div>
+
+<!-- 菱形紋 pattern 定義 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <pattern id="pat-band" width="44" height="34" patternUnits="userSpaceOnUse">
+    <rect width="44" height="34" class="p-bg"/>
+    <rect x="0" y="0"  width="44" height="2" class="p-ink"/>
+    <rect x="0" y="32" width="44" height="2" class="p-ink"/>
+    <path d="M22 5.5 L40.5 17 L22 28.5 L3.5 17 Z" class="p-out"/>
+    <path d="M22 11.5 L31 17 L22 22.5 L13 17 Z" class="p-ink"/>
+    <circle cx="22" cy="17" r="1.5" class="p-eye"/>
+    <path d="M0 12.5 L2.5 17 L0 21.5 Z" class="p-tri"/>
+    <path d="M44 12.5 L41.5 17 L44 21.5 Z" class="p-tri"/>
+  </pattern>
+  <pattern id="pat-rule" width="30" height="14" patternUnits="userSpaceOnUse">
+    <path d="M15 1.5 L28.6 7 L15 12.5 L1.4 7 Z" class="p-rule"/>
+  </pattern>
+</defs></svg>
+
+<svg class="band" aria-hidden="true" focusable="false"><rect width="100%" height="34" fill="url(#pat-band)"/></svg>
 
 <div class="wrap">
+  <div class="progress" id="progress"></div>
   <header>
-    <p class="stage-count" id="stage-count"></p>
-    <h1 class="term serif" id="term">載入中</h1>
+    <h1 class="term truku" id="term">Mgay Bari</h1>
     <p class="term-zh" id="term-zh"></p>
-    <p class="subtitle" id="subtitle"></p>
+    <p class="story-title" id="story-title"></p>
+    <div class="keys" id="keys"></div>
   </header>
 
-  <div class="who" id="who">
-    <span class="dot"></span>
-    <span id="who-text">正在取得您的 LINE 身分…</span>
-  </div>
+  <div class="who" id="who"><span class="dot"></span><span id="who-text">正在取得您的 LINE 身分…</span></div>
 
   <main id="main"></main>
 
@@ -210,267 +213,328 @@ footer{
   </footer>
 </div>
 
+<svg class="band" aria-hidden="true" focusable="false"><rect width="100%" height="34" fill="url(#pat-band)"/></svg>
+
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
 /* ============================================================
    1. 設定
    ============================================================ */
 const LIFF_ID  = "2011311323-Wj59NXZK";
-const API_BASE = "";   // 之後 FastAPI 上線後填入，例如 "https://your-api.com"
+const API_BASE = "";        // FastAPI 上線後填入，例如 "https://your-api.com"
+const REQUIRE_SCAN = true;  // true = 從總覽點進去只能閱讀，要現場掃 QR 才能作答集章
 
 /* ============================================================
-   2. 五個關卡的內容
-   ⚠️ 族語拼寫與文化敘述請務必請協會或耆老校訂後再正式上線。
-      瞭望台的族語名稱我不敢亂填，留了空白（term 留空會只顯示中文）。
+   2. 六個導覽點（內容出自「太魯閣歲時祭儀 數位導覽與測驗內容 母語精修版」）
    ============================================================ */
-const ORDER = ["archery", "trap", "tower", "house", "weaving"];
+const ORDER = ["tower","house","archery","trap","weaving","mgaybari"];
 
 const STAGES = {
-  archery: {
-    term: "Tmsamat", termZh: "狩獵",
-    title: "射箭體驗",
-    subtitle: "從射箭認識傳統狩獵文化",
-    image: "",           // 之後填圖片網址，例如 "img/archery.jpg"
-    imageHint: "射箭場或山林照片",
-    intro: [
-      "傳統狩獵不只是為了獲取食物，更是學習認識山林、與自然共存的方式。獵人要能讀懂風向、足跡與季節，才有資格上山。",
-      "狩獵有著嚴格的規範（Gaya），教導族人尊重生命、不貪求，並且要把獵物與部落親族共享。分享不是客套，而是維繫整個部落的方法。"
+  tower:{
+    term:"Puyiq", termZh:"瞭望台",
+    storyTitle:"部落的眼睛：守護家園的第一道防線",
+    keys:[["DAKA","瞭望"],["Puyiq","瞭望台"],["Sapah","家屋"]],
+    image:"", imageHint:"瞭望台照片",
+    intro:[
+      "在太魯閣族的歷史中，為了保護族人免受外敵侵襲，部落入口或制高點必定會搭建高聳的瞭望台（Puyiq）。在太魯閣語中，「DAKA」就是「站在高處眺望、瞭望」的意思。",
+      "瞭望台不僅是一座建築，更是守護 Sapah（家屋）的核心。部落青年會跟隨長輩在此輪值守夜，學習辨識風吹草動。這是青年邁向真正勇士的重要訓練，象徵著太魯閣族人團結抵禦外敵的強烈意志。"
     ],
-    question: "在太魯閣族文化中，傳統狩獵（Tmsamat）最強調什麼精神？",
-    options: [
-      "盡可能抓越多的獵物越好",
-      "尊重生命，並與部落親族共享獵物",
-      "只能在晚上的時候才能打獵"
-    ],
-    answer: 1,
-    hint: "再看一次上面第二段，關於 Gaya 的部分。"
+    question:"太魯閣語中的「DAKA」是什麼意思，同時也是設立瞭望台的主要目的？",
+    options:["觀察星象與天氣變化","站在高處瞭望，守護部落安全","儲藏部落的農作豐收"],
+    answer:1,
+    hint:"答案就在第一段，DAKA 這個字的字義。"
   },
 
-  trap: {
-    term: "Qlubung", termZh: "陷阱",
-    title: "陷阱智慧",
-    subtitle: "看懂山林留下的線索",
-    image: "",
-    imageHint: "傳統陷阱或獵徑照片",
-    intro: [
-      "設陷阱之前，獵人得先花很長的時間觀察：動物的足跡往哪個方向、什麼時間經過、常走哪一條路。讀懂這些線索，才知道該把陷阱放在哪裡。",
-      "陷阱的種類會依照獵物不同而改變，獵人也必須定期巡視，避免獵物受苦或白白浪費。這些判斷通常不是用講的，而是父親帶著孩子上山，一次一次親手示範傳下來的。"
+  house:{
+    term:"Sapah", termZh:"傳統家屋",
+    storyTitle:"與自然共呼吸的半穴居：神聖的 Sapah",
+    keys:[["Sapah","家／家屋"],["Gaya","傳統規範／祖訓"]],
+    image:"", imageHint:"半穴居家屋或火塘照片",
+    intro:[
+      "走進太魯閣族的傳統家屋（Sapah），你會發現它向下挖掘的「半穴居」形式，充滿了冬暖夏涼、抵擋強風的環境智慧。",
+      "在 Sapah 的中央，一定有著終年不滅的火塘。火塘不只是取暖烹飪的地方，更是家人團聚、長輩傳遞歷史故事與 Gaya（祖先流傳下來的傳統規範與紀律）的神聖空間。火的延續，象徵著家族血脈與太魯閣精神的生生不息。"
     ],
-    question: "獵人在設置陷阱之前，最重要的準備工作是什麼？",
-    options: [
-      "先大聲呼喊，把動物趕過來",
-      "觀察動物的足跡與行走路徑，判斷該把陷阱放在哪裡",
-      "在同一個地方盡量多放幾個陷阱"
-    ],
-    answer: 1,
-    hint: "關鍵在「觀察」，答案就在第一段。"
+    question:"太魯閣族的傳統家屋（Sapah）內部，哪一個地方是傳遞歷史與 Gaya（傳統規範）的神聖核心？",
+    options:["門口的石階","終年不滅的火塘","存放獵物的屋頂"],
+    answer:1,
+    hint:"想想 Sapah 正中央、一年到頭都不會熄掉的那個東西。"
   },
 
-  tower: {
-    term: "", termZh: "瞭望台",     // TODO: 族語名稱請協會提供
-    title: "瞭望台",
-    subtitle: "部落的眼睛",
-    image: "",
-    imageHint: "瞭望台或部落遠景照片",
-    intro: [
-      "瞭望台通常設在部落地勢最高、視野最開闊的位置。族人在這裡守望獵場與農地，觀察雲霧與天候的變化，也在狀況發生時第一時間向部落示警。",
-      "輪流守望是部落共同的責任。年輕人在瞭望台上學到的不只是警戒，而是把整個部落的安危扛在自己肩上。"
+  archery:{
+    term:"Tmsamat", termZh:"射箭與狩獵",
+    storyTitle:"勇士的試煉：用心地與山林動物共存",
+    keys:[["Tmsamat","狩獵"],["Utux","祖靈"],["Gaya","禁忌與規範"]],
+    image:"", imageHint:"射箭場或山林照片",
+    intro:[
+      "在太魯閣語中，狩獵被稱為「Tmsamat」。Tmsamat 的原意並不是現代人以為的「捕殺動物」，而是「用心地在山林裡跟動物一起生活」。",
+      "獵人入山前必須嚴格遵守 Gaya（禁忌與規範），他們對山林充滿敬畏，深信所有的收穫都是 Utux（祖靈）的恩賜。Tmsamat 的最高原則是「只取所需」，絕不趕盡殺絕，展現太魯閣族與自然生態永續共存的深刻智慧。"
     ],
-    question: "傳統部落設置瞭望台，主要的用途是什麼？",
-    options: [
-      "純粹是裝飾用的建築",
-      "守望獵場與農地、觀察天候，並在危險來臨時向部落示警",
-      "專門用來存放糧食"
-    ],
-    answer: 1,
-    hint: "想想看站在部落最高點，能看見什麼。"
+    question:"太魯閣語中的狩獵「Tmsamat」，其蘊含的最真實意義是什麼？",
+    options:["盡可能獵捕最多的獵物來展現實力","用心地在山林裡跟動物一起生活，只取所需","將山林裡的動物全部驅趕出去"],
+    answer:1,
+    hint:"再看一次第一段，Tmsamat 的原意。"
   },
 
-  house: {
-    term: "Sapah", termZh: "家屋",
-    title: "傳統家屋",
-    subtitle: "火塘旁的家族記憶",
-    image: "",
-    imageHint: "半穴居家屋或火塘照片",
-    intro: [
-      "太魯閣族的傳統家屋多採半穴居形式：先向下挖出地基，再以木材、石板與茅草搭建。往下挖能讓屋內冬暖夏涼，也大幅降低山區強風的影響。",
-      "屋內中央設有火塘，煮食、取暖都靠它，長輩也在火塘邊對晚輩講述 Gaya 與家族的故事。家屋因此不只是住的地方，而是生活與信仰一起發生的中心。"
+  trap:{
+    term:"Sluq", termZh:"陷阱狩獵",
+    storyTitle:"借力自然：無聲的生態智慧與共享精神",
+    keys:[["Sluq","陷阱"]],
+    image:"", imageHint:"傳統陷阱或獵徑照片",
+    intro:[
+      "在茂密的森林中，太魯閣族人精通製作各種陷阱（Sluq）。他們深刻了解動物的習性與行徑路線，就地取材利用樹枝、石板的彈力與重力來設置 Sluq。",
+      "這是一門高度精密的技術，不同獵物對應完全不同的陷阱構造。更重要的是，當陷阱捕獲獵物後，族人一定會將收穫帶回部落與大家分享。這份無私的共享精神，是太魯閣社會維繫情感的重要基石。"
     ],
-    question: "太魯閣族傳統家屋採用「半穴居」形式，主要的好處是什麼？",
-    options: [
-      "冬暖夏涼，而且能減少山區強風的影響",
-      "方便隨時拆解，搬到別的地方去",
-      "因為族人不會使用木材蓋房子"
-    ],
-    answer: 0,
-    hint: "答案跟「往下挖」這個動作有關。"
+    question:"當太魯閣族人透過陷阱（Sluq）獲得豐收後，一定會採取什麼樣的行動來展現社會價值？",
+    options:["帶回部落與族人共享，展現互助精神","藏在山林裡作為自己的秘密糧食","拿去和其他部落交換武器"],
+    answer:0,
+    hint:"第二段最後提到的那份「共享精神」。"
   },
 
-  weaving: {
-    term: "Tminun", termZh: "織布",
-    title: "苧麻織布",
-    subtitle: "祖靈的眼睛",
-    image: "",
-    imageHint: "織布機或菱形紋布匹照片",
-    intro: [
-      "從種苧麻、取纖維、捻線、染色到上機織布，每一道工序都要長時間的學習與耐心。織布是太魯閣族女性重要的生命課題，不是隨手可成的手工。",
-      "傳統上，女子要能織出完整的布匹，才代表具備成家的能力。最具代表性的菱形紋被視為祖靈的眼睛，象徵祖靈始終看顧著族人。"
+  weaving:{
+    term:"Tminun", termZh:"太魯閣織布",
+    storyTitle:"祖靈之眼：編織生命圖騰的女力",
+    keys:[["Tminun","織布"],["Ubung","地織機"],["Ptasan","紋面"],["Hakaw Utux","彩虹橋"],["Dowriq Utux","祖靈之眼"]],
+    image:"", imageHint:"地織機或菱形紋布匹照片",
+    intro:[
+      "織布（Tminun）是太魯閣族女性的靈魂。操作傳統的地織機（Ubung）需要極大的耐心。在過去，唯有精通 Tminun 的女性，才能獲得紋面（Ptasan）的榮耀，這也是死後能通過彩虹橋（Hakaw Utux）回到祖靈懷抱的唯一憑證。",
+      "太魯閣織品中最經典的圖騰「菱形紋」，代表著「祖靈之眼（Dowriq Utux）」，象徵祖先隨時在高處庇佑著子孫，同時也提醒族人要時刻遵守 Gaya。"
     ],
-    question: "在傳統太魯閣族社會中，織布（Tminun）對女性代表什麼意義？",
-    options: [
-      "只是打發時間的休閒活動",
-      "是成年與成家能力的重要象徵",
-      "只有頭目的女兒才可以學"
+    question:"在傳統太魯閣族文化中，精通織布（Tminun）的女性會獲得什麼榮耀，作為未來死後通過彩虹橋（Hakaw Utux）的憑證？",
+    options:["獲得專屬的獵刀","獲得紋面（Ptasan）的資格","成為部落的最高領袖"],
+    answer:1,
+    pin:15,   // 固定配「Mkla ku tminun 我會織布」
+    hint:"第一段提到了那個「唯一憑證」。"
+  },
+
+  mgaybari:{
+    term:"Mgay Bari", termZh:"太魯閣歲時祭儀",
+    storyTitle:"Mgay Bari：向祖靈獻上最深的感謝",
+    keys:[["Mgay Bari","感恩祭"],["Utux rudan","祖先的靈"],["Gaya","傳統規範"]],
+    image:"", imageHint:"大會舞或祭典現場照片",
+    intro:[
+      "你現在所參與的，正是太魯閣族一年中最重要的盛事——感恩祭（Mgay Bari）。",
+      "在傳統農作收成後，族人會舉行隆重的儀式，將最豐碩的農作物與獵物獻給祖靈（Utux rudan），感謝祂們一整年的庇護與賜予。這不僅是感謝豐收的節日，更是族人團聚、重新凝聚部落向心力，並將 Gaya 與文化傳承給下一代的神聖時刻。大會舞中大家手牽著手，就是團結一心的最高表現。"
     ],
-    answer: 1,
-    hint: "第二段提到「才代表具備什麼能力」。"
+    question:"太魯閣族的感恩祭「Mgay Bari」，最核心的意義是感謝誰賜予了一整年的豐收與庇護？",
+    options:["太陽神","祖靈（Utux / Utux rudan）","隔壁部落的頭目"],
+    answer:1,
+    pin:2,   // 固定配「Mhuway su balay 謝謝你」
+    hint:"第二段講到，農作物與獵物是獻給誰的。"
   }
 };
+
+/* ============================================================
+   3. 太魯閣生活片語
+   ============================================================ */
+const PHRASES = [
+  ["Embiyax su hug?","你好嗎？"],
+  ["Embiyax ku.","我很好"],
+  ["Mhuway su balay.","謝謝你"],
+  ["Ini huya!","沒關係"],
+  ["Ini ta bi kla.","對不起"],
+  ["Iya qsiqa!","不要客氣！"],
+  ["Swayay ta han!","再見了！"],
+  ["Laqi ku Truku ka yaku.","我是太魯閣族小孩"],
+  ["Mkla ku rmngaw kari Truku.","我會說族語"],
+  ["Piya tuki ka sayang da?","現在幾點？"],
+  ["Gaga inu ka saan ngangut hug?","廁所在哪裡？"],
+  ["Mha su inu?","你要去哪裡？"],
+  ["Ima ka hangan su?","你叫什麼名字？"],
+  ["Mkla ku rmgrig.","我會跳舞"],
+  ["Mkla ku meuyas.","我會唱歌"],
+  ["Mkla ku tminun.","我會織布"]
+];
 
 const TRIBES = ["太魯閣族","賽德克族","泰雅族","阿美族","布農族","排灣族","其他原住民族","漢人 / 其他"];
 
 /* ============================================================
-   3. 狀態
+   4. 狀態與啟動
    ============================================================ */
-const state = { stage:null, userId:"", displayName:"", loggedIn:false };
+const state = { stage:null, scanned:false, userId:"", displayName:"", loggedIn:false, phraseIdx:0 };
 const $ = id => document.getElementById(id);
 
-/* ============================================================
-   4. 啟動：先 liff.init()，完成後才讀參數
-   ============================================================ */
 (async function start(){
-  // init 前先偷存一份 stage 當備援（若還在 liff.state 裡會是 null，沒關係）
-  stash(new URLSearchParams(location.search).get("stage"));
-
   try{
-    await liff.init({ liffId: LIFF_ID, withLoginOnExternalBrowser: true });
-
-    // ⚠️ 一定要等 init 完成，附加參數才會從 liff.state 還原出來
-    state.stage = readStage();
-
+    await liff.init({ liffId: LIFF_ID, withLoginOnExternalBrowser:true });
+    // ⚠️ init 完成後才讀參數，附加資訊這時才從 liff.state 還原
+    pickStage();
     if (liff.isLoggedIn()){
       const p = await liff.getProfile();
       state.userId = p.userId;
       state.displayName = p.displayName;
       state.loggedIn = true;
-      setWho("ok", `歡迎，${esc(p.displayName)}`, p.userId);
+      setWho("ok", "歡迎，" + p.displayName);
     } else {
-      setWho("warn", "尚未登入 LINE，資料將無法計入統計");
+      setWho("warn","尚未登入 LINE，集章不會被記錄");
     }
   } catch(err){
     console.error("LIFF 初始化失敗", err);
-    state.stage = readStage();
-    setWho("warn", "訪客模式：未透過 LINE 開啟，內容可瀏覽但不會記錄");
+    pickStage();
+    setWho("warn","訪客模式：未透過 LINE 開啟，可閱讀但不會記錄");
   }
-
   render();
   setupDebug();
 })();
 
-function readStage(){
-  const s = new URLSearchParams(location.search).get("stage") || recall();
-  stash(s);
-  return (s && STAGES[s]) ? s : null;
+function pickStage(){
+  const s = new URLSearchParams(location.search).get("stage");
+  if (s && STAGES[s]){ state.stage = s; state.scanned = true; }
 }
-function stash(v){ try{ if(v) sessionStorage.setItem("mb_stage", v); }catch(e){} }
-function recall(){ try{ return sessionStorage.getItem("mb_stage"); }catch(e){ return null; } }
-
-function setWho(cls, text, uid){
+function setWho(cls, text){
   $("who").className = "who " + cls;
-  $("who-text").innerHTML = esc(text) + (uid ? `<span class="uid">ID ${esc(uid)}</span>` : "");
+  $("who-text").textContent = text;
 }
+
+/* 本機集章紀錄：只是讓總覽看得出進度，正式統計以後端為準 */
+function loadDone(){ try{ return JSON.parse(localStorage.getItem("mb_done_v1")||"[]"); }catch(e){ return []; } }
+function markDone(k){ try{ const a=loadDone(); if(!a.includes(k)){ a.push(k); localStorage.setItem("mb_done_v1",JSON.stringify(a)); } }catch(e){} }
 
 /* ============================================================
    5. 畫面
    ============================================================ */
-function render(){
-  state.stage ? renderStage(STAGES[state.stage]) : renderMenu();
+function render(){ state.stage ? renderStage() : renderMenu(); }
+
+function renderProgress(activeKey){
+  const done = loadDone();
+  const pips = ORDER.map(k=>{
+    const cls = k===activeKey ? "pip now" : (done.includes(k) ? "pip done" : "pip");
+    return `<span class="${cls}"></span>`;
+  }).join("");
+  const label = activeKey
+    ? `第 ${ORDER.indexOf(activeKey)+1} 站，共 ${ORDER.length} 站`
+    : `已完成 ${done.length} / ${ORDER.length} 站`;
+  $("progress").innerHTML = `<div class="pips">${pips}</div><span class="label">${label}</span>`;
 }
 
-function renderStage(s){
-  const n = ORDER.indexOf(state.stage) + 1;
-  $("stage-count").textContent = `第 ${n} 站，共 ${ORDER.length} 站`;
-  $("term").textContent = s.term || s.termZh;
-  $("term-zh").textContent = s.term ? s.termZh : "";
-  $("subtitle").textContent = s.subtitle;
-  document.title = `${s.title}｜Mgay Bari 文化導覽`;
+function renderStage(){
+  const key = state.stage, s = STAGES[key];
+  const done = loadDone().includes(key);
+  const locked = REQUIRE_SCAN && !state.scanned && !done;
+
+  renderProgress(key);
+  $("term").textContent = s.term;
+  $("term-zh").textContent = s.termZh;
+  $("story-title").textContent = s.storyTitle;
+  $("keys").innerHTML = s.keys.map(([a,b]) => `<span class="key"><b class="truku">${esc(a)}</b> ${esc(b)}</span>`).join("");
+  document.title = s.termZh + "｜Mgay Bari 數位導覽";
 
   const media = s.image
     ? `<img class="photo" src="${esc(s.image)}" alt="${esc(s.imageHint)}">`
     : `<div class="photo-empty">${esc(s.imageHint)}</div>`;
 
+  let action;
+  if (done){
+    action = `<div class="locked">
+        <p>這一站已經完成了</p>
+        <span>可以前往下一個導覽點繼續集章</span>
+      </div>`;
+  } else if (locked){
+    action = `<div class="locked">
+        <p>請到現場掃描這一站的 QR Code</p>
+        <span>掃描後才能作答並完成集章。現在可以先閱讀內容。</span>
+      </div>`;
+  } else {
+    action = `
+      <section class="quiz" id="quiz">
+        <h2>測驗題</h2>
+        <p class="question">${esc(s.question)}</p>
+        ${s.options.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${"ABC"[i]}</span><span>${esc(o)}</span></button>`).join("")}
+        <p class="feedback" id="feedback"></p>
+      </section>
+
+      <section class="reward hidden" id="reward">
+        <div class="head">${eyeSVG(46)}<h2>答對了</h2></div>
+        <p class="note">留下基本資料，就完成這一站的集章。</p>
+        <label for="userName">真實姓名</label>
+        <input type="text" id="userName" autocomplete="name" placeholder="請輸入您的姓名">
+        <label for="userTribe">您的族別</label>
+        <select id="userTribe">
+          <option value="" disabled selected>請選擇族別</option>
+          ${TRIBES.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join("")}
+        </select>
+        <button class="btn" id="send">送出資料</button>
+        <p class="err hidden" id="formErr"></p>
+      </section>
+
+      <section class="hidden" id="done"></section>`;
+  }
+
   $("main").innerHTML = `
     ${media}
-    <div class="intro">${s.intro.map(p => `<p>${esc(p)}</p>`).join("")}</div>
-
-    <section class="quiz" id="quiz">
-      <h2>小測驗</h2>
-      <p class="question">${esc(s.question)}</p>
-      ${s.options.map((o,i) => `
-        <button class="opt" data-i="${i}">
-          <span class="mark">${"ABC"[i]}</span><span>${esc(o)}</span>
-        </button>`).join("")}
-      <p class="feedback" id="feedback"></p>
-    </section>
-
-    <section class="reward hidden" id="reward">
-      <div class="stamp">
-        <span class="stamp-mark" aria-hidden="true">◆</span>
-        <h2>答對了，這一站完成</h2>
-      </div>
-      <p class="note">請留下基本資料，接著前往「族語聊天室」向老師挑戰一句族語，就能兌換禮品。</p>
-
-      <label for="userName">真實姓名</label>
-      <input type="text" id="userName" autocomplete="name" placeholder="請輸入您的姓名">
-
-      <label for="userTribe">您的族別</label>
-      <select id="userTribe">
-        <option value="" disabled selected>請選擇族別</option>
-        ${TRIBES.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("")}
-      </select>
-
-      <button class="btn-send" id="send">送出資料</button>
-      <p class="err hidden" id="formErr"></p>
-    </section>
-
-    <section class="done hidden" id="done">
-      <h2>資料已送出</h2>
-      <p class="big" id="doneName"></p>
-      <p>請前往服務台出示這個畫面兌換好禮。</p>
-      <a class="backlink" href="?">看看其他關卡</a>
-    </section>
+    <div class="intro">${s.intro.map(p=>`<p>${esc(p)}</p>`).join("")}</div>
+    <svg class="rule" aria-hidden="true" focusable="false"><rect width="100%" height="14" fill="url(#pat-rule)"/></svg>
+    ${action}
+    <button class="btn-ghost" id="toMenu">看看其他導覽點</button>
   `;
 
-  $("quiz").querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => answer(b, s)));
-  $("send").addEventListener("click", submit);
+  $("toMenu").addEventListener("click", goMenu);
+  if (!done && !locked){
+    $("quiz").querySelectorAll(".opt").forEach(b => b.addEventListener("click", ()=>answer(b,s)));
+    $("send").addEventListener("click", submit);
+  }
+  window.scrollTo(0,0);
 }
 
 function renderMenu(){
-  $("stage-count").textContent = "數位集章";
+  renderProgress(null);
+  const done = loadDone();
   $("term").textContent = "Mgay Bari";
-  $("term-zh").textContent = "感恩祭文化導覽";
-  $("subtitle").textContent = "請掃描各站的 QR Code 開始，或從下方選擇";
-  $("main").innerHTML = ORDER.map(k => {
-    const s = STAGES[k];
-    return `<a class="menu-item" href="?stage=${k}">
-      <span class="t serif">${esc(s.term || s.termZh)}</span>
-      <span class="z">${esc(s.title)}　${esc(s.subtitle)}</span>
-    </a>`;
-  }).join("");
+  $("term-zh").textContent = "太魯閣歲時祭儀";
+  $("story-title").textContent = "六個導覽點，掃描現場的 QR Code 開始";
+  $("keys").innerHTML = "";
+  document.title = "Mgay Bari｜太魯閣歲時祭儀 數位導覽";
+
+  $("main").innerHTML = `
+    ${ORDER.map(k=>{
+      const s = STAGES[k], ok = done.includes(k);
+      return `<button class="menu-item" data-k="${k}">
+        <span class="n"><span class="t truku">${esc(s.term)}</span><span class="z">${esc(s.termZh)}</span></span>
+        <span class="st ${ok?"ok":""}">${ok?"已完成":"未完成"}</span>
+      </button>`;
+    }).join("")}
+    <svg class="rule" aria-hidden="true" focusable="false"><rect width="100%" height="14" fill="url(#pat-rule)"/></svg>
+    ${phraseHTML("學一句太魯閣語")}
+  `;
+  $("main").querySelectorAll(".menu-item").forEach(b=>{
+    b.addEventListener("click", ()=>{ state.stage = b.dataset.k; state.scanned = false; render(); });
+  });
+  bindPhrase();
+  window.scrollTo(0,0);
 }
 
-/* ============================================================
-   6. 互動
-   ============================================================ */
+function goMenu(){ state.stage = null; state.scanned = false; render(); }
+
+/* ---------- 族語片語 ---------- */
+function phraseHTML(caption, pin){
+  state.phraseIdx = (typeof pin === "number") ? pin : Math.floor(Math.random()*PHRASES.length);
+  const [tw,zh] = PHRASES[state.phraseIdx];
+  return `<section class="phrase" id="phrase">
+      <p class="cap">${esc(caption)}</p>
+      <p class="tw truku" id="ph-tw">${esc(tw)}</p>
+      <p class="zh" id="ph-zh">${esc(zh)}</p>
+      <button id="ph-next">再學一句</button>
+    </section>`;
+}
+function bindPhrase(){
+  const btn = $("ph-next");
+  if (!btn) return;
+  btn.addEventListener("click", ()=>{
+    let i; do { i = Math.floor(Math.random()*PHRASES.length); } while (i === state.phraseIdx && PHRASES.length>1);
+    state.phraseIdx = i;
+    $("ph-tw").textContent = PHRASES[i][0];
+    $("ph-zh").textContent = PHRASES[i][1];
+  });
+}
+
+/* ---------- 互動 ---------- */
 function answer(btn, s){
-  const picked = Number(btn.dataset.i);
-  if (picked === s.answer){
+  if (Number(btn.dataset.i) === s.answer){
     $("quiz").classList.add("hidden");
     $("reward").classList.remove("hidden");
-    $("reward").scrollIntoView({ behavior:"smooth", block:"start" });
+    $("reward").scrollIntoView({behavior:"smooth", block:"start"});
   } else {
     btn.disabled = true;
-    btn.classList.add("is-wrong");
+    btn.classList.add("wrong");
     $("feedback").textContent = "這個不是。" + s.hint;
   }
 }
@@ -481,8 +545,8 @@ async function submit(){
   const err   = $("formErr");
   const btn   = $("send");
 
-  if (!name){  showErr(err, "請填寫姓名"); $("userName").focus(); return; }
-  if (!tribe){ showErr(err, "請選擇族別"); $("userTribe").focus(); return; }
+  if (!name){  showErr(err,"請填寫姓名"); $("userName").focus(); return; }
+  if (!tribe){ showErr(err,"請選擇族別"); $("userTribe").focus(); return; }
   err.classList.add("hidden");
 
   const payload = {
@@ -494,54 +558,76 @@ async function submit(){
     submittedAt: new Date().toISOString()
   };
 
-  btn.disabled = true;
-  btn.textContent = "送出中…";
-
+  btn.disabled = true; btn.textContent = "送出中…";
   try{
     if (API_BASE){
       const res = await fetch(API_BASE + "/api/checkin", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
+        method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
       });
       if (!res.ok) throw new Error("HTTP " + res.status);
     } else {
-      console.log("尚未設定 API_BASE，以下為將送出的資料：", payload);
+      console.log("尚未設定 API_BASE，將送出的資料：", payload);
     }
-    $("reward").classList.add("hidden");
-    $("doneName").textContent = name;
-    $("done").classList.remove("hidden");
-    $("done").scrollIntoView({ behavior:"smooth", block:"center" });
+    markDone(state.stage);
+    renderDone(name);
   } catch(e){
     console.error(e);
-    btn.disabled = false;
-    btn.textContent = "送出資料";
-    showErr(err, "送出失敗，請確認網路後再按一次");
+    btn.disabled = false; btn.textContent = "送出資料";
+    showErr(err,"送出失敗，請確認網路後再按一次");
   }
 }
 
-function showErr(el, msg){ el.textContent = msg; el.classList.remove("hidden"); }
+function renderDone(name){
+  const s = STAGES[state.stage];
+  const left = ORDER.length - loadDone().length;
+  $("reward").classList.add("hidden");
+  const el = $("done");
+  el.className = "done";
+  el.innerHTML = `
+    ${eyeSVG(104)}
+    <h2>${esc(s.termZh)} 完成</h2>
+    <p class="name">${esc(name)}</p>
+    <p class="sub">${left>0 ? `還有 ${left} 個導覽點等你` : "六個導覽點全部完成了"}</p>
 
-/* ============================================================
-   7. 除錯：網址加 &debug=1
-   ============================================================ */
+    <div class="next">
+      <h3>接下來：族語聊天室</h3>
+      <p>帶著下面這一句，到族語聊天室向老師說一次，就能兌換禮品。</p>
+    </div>
+    ${phraseHTML("把這一句帶去挑戰", s.pin)}
+  `;
+  bindPhrase();
+  renderProgress(state.stage);
+  el.scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+function showErr(el,msg){ el.textContent = msg; el.classList.remove("hidden"); }
+
+/* 祖靈之眼 Dowriq Utux */
+function eyeSVG(size){
+  return `<svg class="eye" width="${size}" height="${size}" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+    <path d="M50 4 L96 50 L50 96 L4 50 Z" fill="none" stroke="#96271F" stroke-width="3.5"/>
+    <path d="M50 19 L81 50 L50 81 L19 50 Z" fill="none" stroke="#1A1512" stroke-width="3"/>
+    <path d="M50 33 L67 50 L50 67 L33 50 Z" fill="#96271F"/>
+    <path d="M50 43 L57 50 L50 57 L43 50 Z" fill="#F2EEE3"/>
+  </svg>`;
+}
+
 function setupDebug(){
   if (new URLSearchParams(location.search).get("debug") !== "1") return;
-  const box = $("debug");
-  box.style.display = "block";
-  let inClient = "n/a", os = "n/a", ver = "n/a";
+  const box = $("debug"); box.style.display = "block";
+  let inClient="n/a", os="n/a", ver="n/a";
   try{ inClient = liff.isInClient(); os = liff.getOS(); ver = liff.getVersion(); }catch(e){}
   box.textContent =
     "URL: " + location.href +
-    "\nstage: " + state.stage +
-    "\nisInClient: " + inClient +
-    "\nisLoggedIn: " + state.loggedIn +
-    "\nOS: " + os + " / LIFF " + ver;
+    "\nstage: " + state.stage + "   scanned: " + state.scanned +
+    "\nuserId: " + (state.userId || "-") +
+    "\nisInClient: " + inClient + "   isLoggedIn: " + state.loggedIn +
+    "\nOS: " + os + " / LIFF " + ver +
+    "\ndone: " + JSON.stringify(loadDone());
 }
 
 function esc(s){
-  return String(s ?? "").replace(/[&<>"']/g, c =>
-    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+  return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 </script>
 </body>
