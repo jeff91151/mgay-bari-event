@@ -143,6 +143,8 @@ input[type=text]:focus,select:focus{outline:3px solid var(--red);outline-offset:
 .done h2{margin:0;font-size:22px;color:var(--forest);}
 .done .name{font-size:28px;font-weight:700;margin:10px 0 2px;}
 .done .sub{color:var(--muted);font-size:15px;margin:0;}
+.pending{font-size:14px;color:var(--red-deep);background:var(--warm);border:1px solid var(--red);
+  padding:12px 14px;margin:16px 0 0;line-height:1.6;text-align:left;}
 .next{border:2px solid var(--ink);background:var(--paper);padding:22px 20px;margin-top:30px;text-align:left;}
 .next h3{margin:0 0 8px;font-size:18px;}
 .next p{margin:0;color:var(--muted);font-size:15px;}
@@ -234,8 +236,10 @@ footer{margin-top:40px;padding:18px 0 44px;font-size:12px;color:var(--muted);tex
    1. 設定
    ============================================================ */
 const LIFF_ID  = "2011311323-Wj59NXZK";
-const API_BASE = "";        // FastAPI 上線後填入，例如 "https://your-api.com"
+// 後端網址。搬家（ngrok → 雲端主機）只要改這一行，其他都不用動。結尾不要加斜線。
+const API_BASE = "https://noncoordinating-dexter-ingravescent.ngrok-free.dev";
 const REQUIRE_SCAN = true;  // true = 從總覽點進去只能閱讀，要現場掃 QR 才能作答集章
+const K_QUEUE  = "mb_queue_v1";   // 送不出去的資料先存這裡
 
 /* ============================================================
    2. 六個導覽點（內容出自「太魯閣歲時祭儀 數位導覽與測驗內容 母語精修版」）
@@ -387,6 +391,8 @@ const $ = id => document.getElementById(id);
   }
   render();
   setupDebug();
+  flushQueue();                                  // 開頁就試著補送上次沒送成功的
+  window.addEventListener("online", flushQueue); // 網路恢復再補一次
 })();
 
 function pickStage(){
@@ -406,6 +412,46 @@ function markDone(k){ try{ const a=loadDone(); if(!a.includes(k)){ a.push(k); lo
 function loadProfile(){ try{ return JSON.parse(localStorage.getItem("mb_profile_v1")||"{}"); }catch(e){ return {}; } }
 function saveProfile(realName, tribe){
   try{ localStorage.setItem("mb_profile_v1", JSON.stringify({realName, tribe})); }catch(e){}
+}
+
+/* ============================================================
+   送資料到後端
+   ============================================================ */
+async function postCheckin(payload){
+  const res = await fetch(API_BASE + "/api/checkin", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "1"   // 少了這行會收到 ngrok 的警告頁而不是 JSON
+    },
+    body: JSON.stringify(payload)
+  });
+  if (res.status >= 400 && res.status < 500){
+    // 資料本身有問題，重試也不會成功
+    let msg = "資料有誤，請確認後再送出";
+    try{ const j = await res.json(); if (j && j.detail) msg = j.detail; }catch(e){}
+    const err = new Error(msg); err.fatal = true; throw err;
+  }
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return res.json();
+}
+
+/* 離線補送：送不出去先存手機，之後自動補 */
+function loadQueue(){ try{ return JSON.parse(localStorage.getItem(K_QUEUE)||"[]"); }catch(e){ return []; } }
+function saveQueue(q){ try{ localStorage.setItem(K_QUEUE, JSON.stringify(q)); }catch(e){} }
+function queuePush(p){ const q = loadQueue(); q.push(p); saveQueue(q); }
+
+async function flushQueue(){
+  if (!API_BASE) return;
+  const q = loadQueue();
+  if (!q.length) return;
+  const left = [];
+  for (const p of q){
+    try{ await postCheckin(p); }
+    catch(e){ if (!e.fatal) left.push(p); }   // fatal 的直接丟掉，留著也沒用
+  }
+  saveQueue(left);
+  if (q.length !== left.length) console.log(`補送成功 ${q.length - left.length} 筆，剩 ${left.length} 筆`);
 }
 
 /* ============================================================
@@ -583,25 +629,28 @@ async function submit(){
 
   btn.disabled = true; btn.textContent = "送出中…";
   try{
-    if (API_BASE){
-      const res = await fetch(API_BASE + "/api/checkin", {
-        method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-    } else {
-      console.log("尚未設定 API_BASE，將送出的資料：", payload);
-    }
+    if (API_BASE){ await postCheckin(payload); }
+    else { console.log("尚未設定 API_BASE，將送出的資料：", payload); }
     markDone(state.stage);
     saveProfile(name, tribe);
-    renderDone(name);
+    renderDone(name, false);
   } catch(e){
     console.error(e);
-    btn.disabled = false; btn.textContent = "送出資料";
-    showErr(err,"送出失敗，請確認網路後再按一次");
+    if (e.fatal){
+      // 姓名沒填、沒登入之類，重試沒用，直接告訴使用者
+      btn.disabled = false; btn.textContent = "送出資料";
+      showErr(err, e.message);
+      return;
+    }
+    // 網路或伺服器的問題：先存起來，之後自動補送，不要卡住現場的人
+    queuePush(payload);
+    markDone(state.stage);
+    saveProfile(name, tribe);
+    renderDone(name, true);
   }
 }
 
-function renderDone(name){
+function renderDone(name, pending){
   const s = STAGES[state.stage];
   const left = ORDER.length - loadDone().length;
   $("reward").classList.add("hidden");
@@ -612,6 +661,7 @@ function renderDone(name){
     <h2>${esc(s.termZh)} 完成</h2>
     <p class="name">${esc(name)}</p>
     <p class="sub">${left>0 ? `還有 ${left} 個導覽點等你` : "六個導覽點全部完成了"}</p>
+    ${pending ? `<p class="pending">網路不太穩，資料已暫存在手機，恢復連線後會自動送出。你可以繼續下一站。</p>` : ""}
 
     <div class="next">
       <h3>接下來：族語聊天室</h3>
