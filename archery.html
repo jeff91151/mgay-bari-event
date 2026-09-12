@@ -5,143 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mgay Bari 文化導覽 - 射箭</title>
     <style>
-        body { 
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-            text-align: center; 
-            padding: 20px; 
-            background-color: #f4f6f8; 
-            color: #333;
-            padding-bottom: 60px; /* 留空間給 footer */
-        }
-        .card { 
-            background: white; 
-            border: 1px solid #e1e4e8; 
-            padding: 24px; 
-            border-radius: 12px; 
-            margin-top: 20px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
-            text-align: left;
-        }
-        .card-center { text-align: center; }
-        .btn { 
-            padding: 12px 24px; 
-            font-size: 16px; 
-            margin-top: 10px; 
-            cursor: pointer; 
-            border: none; 
-            border-radius: 8px; 
-            transition: opacity 0.2s;
-            width: 100%;
-        }
-        .btn:active { opacity: 0.8; }
-        .btn-option { background-color: #f0f0f0; color: #333; margin-bottom: 10px; }
-        .btn-submit { background-color: #28a745; color: white; font-weight: bold; margin-top: 15px;}
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f7f6; color: #333; margin: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding-bottom: 60px; }
+        .card { background: white; border: 1px solid #ddd; padding: 20px; border-radius: 10px; margin-top: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: left; }
+        h1 { font-size: 24px; color: #2c3e50; text-align: center; }
+        h3 { color: #d9534f; margin-bottom: 5px; }
+        .img-placeholder { width: 100%; height: 200px; background-color: #e9ecef; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d; margin-bottom: 15px; border: 2px dashed #ccc; }
+        .btn { padding: 12px 20px; font-size: 16px; margin-top: 10px; cursor: pointer; border: none; border-radius: 5px; width: 100%; font-weight: bold; transition: 0.3s; }
+        .btn-option { background-color: #f8f9fa; color: #333; border: 1px solid #ccc; text-align: left; }
+        .btn-option:hover { background-color: #e2e6ea; }
+        .btn-submit { background-color: #4CAF50; color: white; margin-top: 20px; }
         
-        h1 { font-size: 24px; margin-bottom: 10px; text-align: center;}
-        .subtitle { color: #666; font-size: 14px; margin-bottom: 20px; text-align: center;}
-        .keyword { color: #d9534f; font-size: 22px; font-weight: bold; margin: 10px 0; text-align: center;}
+        /* 表單輸入框樣式 */
+        input[type="text"], select { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
         
-        .image-placeholder {
-            width: 100%;
-            height: 180px;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #888;
-            margin-bottom: 15px;
-        }
+        /* 隱藏區塊的設定 */
+        #reward-section, #success-msg { display: none; }
 
-        /* 表單樣式 */
-        .form-group { margin-top: 15px; text-align: left; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px;}
-        
-        /* 隱藏區塊 */
-        .hidden { display: none; }
-
-        /* Footer */
-        .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            font-size: 12px;
-        }
+        /* 頁尾版權宣告 */
+        footer { margin-top: 40px; font-size: 12px; color: #888; text-align: center; padding: 20px 0; border-top: 1px solid #ddd; }
     </style>
 </head>
 <body>
-    <h1>🏹 導覽｜射箭體驗</h1>
-    <p class="subtitle">主題：從射箭認識傳統狩獵文化</p>
+    <div class="container">
+        <!-- 頂部標題區 -->
+        <h1>🏹 導覽｜射箭體驗</h1>
+        <p style="text-align: center; color: #666;">主題：從射箭認識傳統狩獵文化</p>
 
-    <!-- 數位集章身分區 -->
-    <div class="card card-center" id="profile-area">
-        <p>🔄 正在載入你的集章身分...</p>
-    </div>
-
-    <!-- 文化介紹區 -->
-    <div class="card">
-        <div class="image-placeholder">
-            📷 未來這裡可以放射箭或山林的圖片
+        <!-- 身分顯示區 -->
+        <div class="card" id="profile-area" style="text-align: center; background-color: #e3f2fd; border-color: #b3e5fc;">
+            <p>🔄 正在載入您的身分...</p>
         </div>
-        <p style="margin: 0; color: #888; font-size: 14px; text-align: center;">太魯閣語關鍵字</p>
-        <div class="keyword">Tmsamat (狩獵)</div>
-        <p>傳統狩獵不只是為了獲取食物，更是學習認識山林、與自然共存的智慧。在太魯閣族文化中，狩獵有著嚴格的規範（Gaya），教導族人必須尊重生命、不貪求，並且要將獲得的獵物與部落親族共享，展現互助與感恩的精神。</p>
-    </div>
 
-    <!-- 互動答題區 -->
-    <div class="card" id="quiz-area">
-        <h3 style="margin-top:0; color:#007BFF;">❓ 隨堂小測驗</h3>
-        <p>在太魯閣族的傳統狩獵文化中，最核心的精神是什麼？</p>
-        <button class="btn btn-option" onclick="checkAnswer(false)">A. 盡可能抓越多越好</button>
-        <button class="btn btn-option" onclick="checkAnswer(false)">B. 自己一個人獨吞獵物</button>
-        <button class="btn btn-option" onclick="checkAnswer(true)">C. 遵守規範，尊重生命與共享</button>
-    </div>
+        <!-- 文化介紹區 -->
+        <div class="card">
+            <div class="img-placeholder">
+                📷 未來這裡可以放射箭或山林的圖片
+            </div>
+            <h3>太魯閣語：Tmsamat (狩獵)</h3>
+            <p style="line-height: 1.6;">傳統狩獵不只是為了獲取食物，更是學習認識山林、與自然共存的智慧。在太魯閣族文化中，狩獵有著嚴格的規範（Gaya），教導族人必須尊重生命、不貪求，並且要將獲得的獵物與部落親族共享，展現互助與感恩的精神。</p>
+        </div>
 
-    <!-- 答對後的表單區 (初始隱藏) -->
-    <div class="card hidden" id="success-area">
-        <h3 style="margin-top:0; color:#28a745;">🎉 恭喜答對！</h3>
-        <p style="font-size: 14px;">您已解鎖通關資格！請留下您的基本資料，前往「族語聊天室」向老師們挑戰一句族語，即可兌換精美禮品喔！</p>
-        
-        <div class="form-group">
+        <!-- 互動問答區 -->
+        <div class="card" id="quiz-section">
+            <h3 style="color: #007BFF;">💡 隨堂小測驗</h3>
+            <p>請問在太魯閣族文化中，傳統狩獵（Tmsamat）最強調什麼精神？</p>
+            <button class="btn btn-option" onclick="checkAnswer(false)">A. 盡可能抓越多的獵物越好</button>
+            <button class="btn btn-option" onclick="checkAnswer(true)">B. 尊重生命，並與部落親族共享獵物</button>
+            <button class="btn btn-option" onclick="checkAnswer(false)">C. 只能在晚上的時候才能打獵</button>
+        </div>
+
+        <!-- 答對後跳出的表單區 (預設隱藏) -->
+        <div class="card" id="reward-section" style="background-color: #fff3cd; border-color: #ffeeba;">
+            <h3 style="color: #856404;">🎉 恭喜答對！</h3>
+            <p style="font-size: 14px; color: #666;">您已解鎖通關資格！請留下您的基本資料，前往「族語聊天室」向老師挑戰一句族語，即可兌換精美禮品喔！</p>
+            
             <label for="userName">真實姓名</label>
-            <input type="text" id="userName" class="form-control" placeholder="請輸入姓名">
-        </div>
-        
-        <div class="form-group">
-            <label for="ethnicity">您的族別</label>
-            <select id="ethnicity" class="form-control">
-                <option value="">請選擇...</option>
+            <input type="text" id="userName" placeholder="請輸入您的姓名">
+
+            <label for="userTribe">您的族別</label>
+            <select id="userTribe">
+                <option value="" disabled selected>請選擇族別</option>
                 <option value="太魯閣族">太魯閣族</option>
                 <option value="阿美族">阿美族</option>
                 <option value="泰雅族">泰雅族</option>
                 <option value="排灣族">排灣族</option>
                 <option value="布農族">布農族</option>
                 <option value="其他原住民族">其他原住民族</option>
-                <option value="漢族/其他">漢族 / 其他</option>
+                <option value="漢人/其他">漢人 / 其他</option>
             </select>
+
+            <button class="btn btn-submit" onclick="submitForm()">送出資料</button>
         </div>
 
-        <button class="btn btn-submit" onclick="submitData()">送出資料並領取獎勵</button>
-    </div>
+        <!-- 送出成功訊息 (預設隱藏) -->
+        <div class="card" id="success-msg" style="text-align: center; border-color: #c3e6cb; background-color: #d4edda; color: #155724;">
+            <h3>✅ 資料已成功送出</h3>
+            <p>請前往服務台出示此畫面兌換好禮！</p>
+        </div>
 
-    <!-- 協會宣告 Footer -->
-    <div class="footer">
-        © 新北市原住民傳藝射箭推廣協會 所有
+        <!-- 協會版權宣告 -->
+        <footer>
+            © 新北市原住民傳藝射箭推廣協會 所有
+        </footer>
     </div>
 
     <!-- 引入 LINE LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         const myLiffId = "2011311323-Wj59NXZK";
-        let lineUserId = ""; // 儲存 LINE ID 供表單送出用
-        let lineDisplayName = "";
+        let globalUserId = "";
+        let globalUserName = "";
 
+        // 1. 初始化 LIFF
         async function initializeLiff() {
             try {
                 await liff.init({ liffId: myLiffId });
@@ -149,54 +105,53 @@
                     liff.login();
                 } else {
                     const profile = await liff.getProfile();
-                    lineUserId = profile.userId;
-                    lineDisplayName = profile.displayName;
+                    globalUserId = profile.userId;
+                    globalUserName = profile.displayName;
                     
                     document.getElementById("profile-area").innerHTML = `
-                        <h3 style="margin-top:0;">歡迎，${lineDisplayName}！</h3>
-                        <p style="font-size: 12px; color: gray; margin-bottom: 0;">系統識別碼: ${lineUserId}</p>
+                        <h3 style="margin: 0; color: #0277bd;">歡迎，${globalUserName}！</h3>
+                        <p style="font-size: 12px; color: #666; margin-top: 5px;">系統識別碼: ${globalUserId}</p>
                     `;
                 }
             } catch (err) {
-                console.error("LIFF 初始化失敗", err);
-                document.getElementById("profile-area").innerHTML = `<p style="color: red; font-weight: bold;">載入失敗，請確認是否用手機 LINE 開啟</p>`;
+                console.error("LIFF 載入失敗", err);
+                document.getElementById("profile-area").innerHTML = `<p style="color: red;">載入身分失敗，請使用 LINE 開啟</p>`;
             }
         }
 
-        // 答題邏輯
+        // 2. 檢查答案邏輯
         function checkAnswer(isCorrect) {
             if (isCorrect) {
-                // 隱藏問題區，顯示表單區
-                document.getElementById("quiz-area").classList.add("hidden");
-                document.getElementById("success-area").classList.remove("hidden");
+                // 答對了，隱藏問答區，顯示表單區
+                document.getElementById("quiz-section").style.display = "none";
+                document.getElementById("reward-section").style.display = "block";
+                
+                // 畫面自動滑動到表單位置
+                document.getElementById("reward-section").scrollIntoView({ behavior: "smooth" });
             } else {
-                alert("哎呀！答錯囉，請再仔細看看上面的文化介紹，再試一次吧！");
+                alert("哎呀！答案不對喔，請再看一次上面的介紹，再試一次！");
             }
         }
 
-        // 模擬送出資料邏輯 (未來串接 FastAPI)
-        function submitData() {
-            const name = document.getElementById("userName").value;
-            const ethnicity = document.getElementById("ethnicity").value;
+        // 3. 送出表單邏輯
+        function submitForm() {
+            const nameInput = document.getElementById("userName").value;
+            const tribeInput = document.getElementById("userTribe").value;
 
-            if (!name || !ethnicity) {
-                alert("請填寫完整的姓名與族別喔！");
+            if (nameInput === "" || tribeInput === "") {
+                alert("請填寫姓名並選擇族別喔！");
                 return;
             }
 
-            // 先用 alert 模擬成功送出
-            alert(`太棒了 ${name}！您的資料已記錄。\n請拿著這個畫面去找族語老師挑戰吧！`);
-            
-            // TODO: 未來這裡會寫 fetch API，把 lineUserId, name, ethnicity 傳給後端 SQLite
-            
-            // 避免重複送出，可以把按鈕變成不可點擊
-            const btn = document.querySelector(".btn-submit");
-            btn.innerText = "✅ 資料已成功送出";
-            btn.style.backgroundColor = "#6c757d";
-            btn.disabled = true;
+            // 這裡未來會發送 API 給 FastAPI 後端
+            console.log("送出資料：", { userId: globalUserId, realName: nameInput, tribe: tribeInput, point: "archery" });
+
+            // 隱藏表單，顯示成功訊息
+            document.getElementById("reward-section").style.display = "none";
+            document.getElementById("success-msg").style.display = "block";
         }
 
-        // 啟動 LIFF
+        // 網頁載入時啟動
         initializeLiff();
     </script>
 </body>
