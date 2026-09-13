@@ -257,6 +257,7 @@ footer{margin-top:40px;padding:18px 0 44px;font-size:12px;color:var(--muted);tex
    1. 設定
    ============================================================ */
 const LIFF_ID  = "2011311323-Wj59NXZK";
+const BUILD    = "2026-09-13-c";   // 改版時記得更新，debug 面板會顯示，用來確認手機拿到的是新版
 // 後端網址。搬家（ngrok → 雲端主機）只要改這一行，其他都不用動。結尾不要加斜線。
 const API_BASE = "https://noncoordinating-dexter-ingravescent.ngrok-free.dev";
 const REQUIRE_SCAN = true;  // true = 從總覽點進去只能閱讀，要現場掃 QR 才能作答集章
@@ -429,10 +430,11 @@ function maybeReset(){
 }
 
 (async function start(){
-  const wasReset = maybeReset();
+  let wasReset = false;
   try{
     await liff.init({ liffId: LIFF_ID, withLoginOnExternalBrowser:true });
     // ⚠️ init 完成後才讀參數，附加資訊這時才從 liff.state 還原
+    wasReset = maybeReset();
     pickStage();
     if (liff.isLoggedIn()){
       const p = await liff.getProfile();
@@ -445,12 +447,13 @@ function maybeReset(){
     }
   } catch(err){
     console.error("LIFF 初始化失敗", err);
+    wasReset = maybeReset();
     pickStage();
     setWho("warn","訪客模式：未透過 LINE 開啟，可閱讀但不會記錄");
   }
   render();
   hideSplash();
-  if (wasReset) setWho("warn", "已清空本機集章紀錄，可以重新測試一次");
+  if (wasReset) $("who-text").textContent += "（已清空本機集章紀錄）";
   setupDebug();
   flushQueue();                                  // 開頁就試著補送上次沒送成功的
   window.addEventListener("online", flushQueue); // 網路恢復再補一次
@@ -793,7 +796,8 @@ function setupDebug(){
   let inClient="n/a", os="n/a", ver="n/a";
   try{ inClient = liff.isInClient(); os = liff.getOS(); ver = liff.getVersion(); }catch(e){}
   box.textContent =
-    "URL: " + location.href +
+    "BUILD: " + BUILD +
+    "\nURL: " + location.href +
     "\nstage: " + state.stage + "   scanned: " + state.scanned +
     "\nuserId: " + (state.userId || "-") +
     "\nisInClient: " + inClient + "   isLoggedIn: " + state.loggedIn +
