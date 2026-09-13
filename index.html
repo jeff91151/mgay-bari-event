@@ -89,7 +89,8 @@ header.is-menu .term-zh{font-size:32px;margin:0;}
 .who.warn .dot{background:#B07A12;}
 
 /* ---------- 內容 ---------- */
-.photo{width:100%;aspect-ratio:16/10;object-fit:cover;border:2px solid var(--ink);display:block;margin-bottom:22px;}
+.photo{width:100%;aspect-ratio:16/10;object-fit:cover;border:2px solid var(--ink);display:block;margin-bottom:8px;}
+.credit{font-size:12px;color:var(--muted);margin:0 0 22px;line-height:1.6;}
 .photo-empty{width:100%;aspect-ratio:16/10;border:2px dashed var(--line);background:#E8E2D4;
   display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;
   color:var(--muted);font-size:14px;margin-bottom:22px;}
@@ -251,7 +252,8 @@ const STAGES = {
     term:"Puyiq", termZh:"瞭望台",
     storyTitle:"部落的眼睛：守護家園的第一道防線",
     keys:[["DAKA","瞭望"],["Puyiq","瞭望台"],["Sapah","家屋"]],
-    image:"", imageHint:"瞭望台照片",
+    image:"", imageHint:"瞭望台照片（建議活動前拍攝現場站台）",
+    credit:"",
     intro:[
       "在太魯閣族的歷史中，為了保護族人免受外敵侵襲，部落入口或制高點必定會搭建高聳的瞭望台（Puyiq）。在太魯閣語中，「DAKA」就是「站在高處眺望、瞭望」的意思。",
       "瞭望台不僅是一座建築，更是守護 Sapah（家屋）的核心。部落青年會跟隨長輩在此輪值守夜，學習辨識風吹草動。這是青年邁向真正勇士的重要訓練，象徵著太魯閣族人團結抵禦外敵的強烈意志。"
@@ -266,7 +268,8 @@ const STAGES = {
     term:"Sapah", termZh:"傳統家屋",
     storyTitle:"與自然共呼吸的半穴居：神聖的 Sapah",
     keys:[["Sapah","家／家屋"],["Gaya","傳統規範／祖訓"]],
-    image:"", imageHint:"半穴居家屋或火塘照片",
+    image:"img/house.jpg", imageHint:"太魯閣族傳統家屋",
+    credit:"圖／原住民族委員會原住民族文化發展中心・國家文化記憶庫（CC BY-NC）",
     intro:[
       "走進太魯閣族的傳統家屋（Sapah），你會發現它向下挖掘的「半穴居」形式，充滿了冬暖夏涼、抵擋強風的環境智慧。",
       "在 Sapah 的中央，一定有著終年不滅的火塘。火塘不只是取暖烹飪的地方，更是家人團聚、長輩傳遞歷史故事與 Gaya（祖先流傳下來的傳統規範與紀律）的神聖空間。火的延續，象徵著家族血脈與太魯閣精神的生生不息。"
@@ -281,7 +284,8 @@ const STAGES = {
     term:"Tmsamat", termZh:"射箭與狩獵",
     storyTitle:"勇士的試煉：用心地與山林動物共存",
     keys:[["Tmsamat","狩獵"],["Utux","祖靈"],["Gaya","禁忌與規範"]],
-    image:"", imageHint:"射箭場或山林照片",
+    image:"img/archery.jpg", imageHint:"族人拉弓射箭",
+    credit:"圖／新北市原住民傳藝射箭推廣協會",
     intro:[
       "在太魯閣語中，狩獵被稱為「Tmsamat」。Tmsamat 的原意並不是現代人以為的「捕殺動物」，而是「用心地在山林裡跟動物一起生活」。",
       "獵人入山前必須嚴格遵守 Gaya（禁忌與規範），他們對山林充滿敬畏，深信所有的收穫都是 Utux（祖靈）的恩賜。Tmsamat 的最高原則是「只取所需」，絕不趕盡殺絕，展現太魯閣族與自然生態永續共存的深刻智慧。"
@@ -296,7 +300,8 @@ const STAGES = {
     term:"Sluq", termZh:"陷阱狩獵",
     storyTitle:"借力自然：無聲的生態智慧與共享精神",
     keys:[["Sluq","陷阱"]],
-    image:"", imageHint:"傳統陷阱或獵徑照片",
+    image:"img/trap.jpg", imageHint:"傳統陷阱結構",
+    credit:"圖／本會拍攝。※此為布農族陷阱教學紀錄，建議活動前改拍太魯閣族現場站台",
     intro:[
       "在茂密的森林中，太魯閣族人精通製作各種陷阱（Sluq）。他們深刻了解動物的習性與行徑路線，就地取材利用樹枝、石板的彈力與重力來設置 Sluq。",
       "這是一門高度精密的技術，不同獵物對應完全不同的陷阱構造。更重要的是，當陷阱捕獲獵物後，族人一定會將收穫帶回部落與大家分享。這份無私的共享精神，是太魯閣社會維繫情感的重要基石。"
@@ -311,7 +316,8 @@ const STAGES = {
     term:"Tminun", termZh:"太魯閣織布",
     storyTitle:"祖靈之眼：編織生命圖騰的女力",
     keys:[["Tminun","織布"],["Ubung","地織機"],["Ptasan","紋面"],["Hakaw Utux","彩虹橋"],["Dowriq Utux","祖靈之眼"]],
-    image:"", imageHint:"地織機或菱形紋布匹照片",
+    image:"img/weaving.jpg", imageHint:"太魯閣族女性使用地織機織布",
+    credit:"圖／花蓮縣文化局・國家文化記憶庫（CC0）",
     intro:[
       "織布（Tminun）是太魯閣族女性的靈魂。操作傳統的地織機（Ubung）需要極大的耐心。在過去，唯有精通 Tminun 的女性，才能獲得紋面（Ptasan）的榮耀，這也是死後能通過彩虹橋（Hakaw Utux）回到祖靈懷抱的唯一憑證。",
       "太魯閣織品中最經典的圖騰「菱形紋」，代表著「祖靈之眼（Dowriq Utux）」，象徵祖先隨時在高處庇佑著子孫，同時也提醒族人要時刻遵守 Gaya。"
@@ -327,7 +333,8 @@ const STAGES = {
     term:"Mgay Bari", termZh:"太魯閣歲時祭儀",
     storyTitle:"Mgay Bari：向祖靈獻上最深的感謝",
     keys:[["Mgay Bari","感恩祭"],["Utux rudan","祖先的靈"],["Gaya","傳統規範"]],
-    image:"", imageHint:"大會舞或祭典現場照片",
+    image:"", imageHint:"大會舞或祭典現場照片（建議使用協會自有照片）",
+    credit:"",
     intro:[
       "你現在所參與的，正是太魯閣族一年中最重要的盛事——感恩祭（Mgay Bari）。",
       "在傳統農作收成後，族人會舉行隆重的儀式，將最豐碩的農作物與獵物獻給祖靈（Utux rudan），感謝祂們一整年的庇護與賜予。這不僅是感謝豐收的節日，更是族人團聚、重新凝聚部落向心力，並將 Gaya 與文化傳承給下一代的神聖時刻。大會舞中大家手牽著手，就是團結一心的最高表現。"
@@ -486,7 +493,8 @@ function renderStage(){
   document.title = s.termZh + "｜Mgay Bari 數位導覽";
 
   const media = s.image
-    ? `<img class="photo" src="${esc(s.image)}" alt="${esc(s.imageHint)}">`
+    ? `<img class="photo" src="${esc(s.image)}" alt="${esc(s.imageHint)}">
+       ${s.credit ? `<p class="credit">${esc(s.credit)}</p>` : ""}`
     : `<div class="photo-empty">${esc(s.imageHint)}</div>`;
 
   let action;
