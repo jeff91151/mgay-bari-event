@@ -32,6 +32,7 @@
   --muted:#6E6559;
   --line:#DCD4C3;
   --warm:#FAF3E2;
+  --acc:#96271F;        /* 站台識別色，進入各站時由 JS 換掉 */
 }
 *{box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
@@ -72,16 +73,18 @@ body{
 .pips{display:flex;gap:9px;}
 .pip{width:11px;height:11px;transform:rotate(45deg);border:1.5px solid var(--line);background:transparent;}
 .pip.done{background:var(--red);border-color:var(--red);}
-.pip.now{background:var(--ink);border-color:var(--ink);}
+.pip.now{background:var(--acc);border-color:var(--acc);}
 .progress .label{font-size:13px;color:var(--muted);letter-spacing:.03em;}
 
 /* ---------- 標題 ---------- */
-.term{font-size:clamp(42px,13.5vw,62px);line-height:1;margin:0;font-weight:700;color:var(--red-deep);}
-.term-zh{font-size:21px;font-weight:700;margin:12px 0 0;}
+.term{font-size:clamp(38px,12.5vw,58px);line-height:1.04;margin:0;font-weight:700;color:var(--acc);}
+/* 中文名做成海報上那種色帶 */
+.term-zh{display:inline-block;background:var(--acc);color:var(--bone);
+  font-size:19px;font-weight:700;padding:6px 14px;margin:14px 0 0;}
 .story-title{font-size:16px;color:var(--muted);margin:4px 0 0;}
 /* 總覽頁：上方已有 logo，就不再重複 Mgay Bari 大字 */
 header.is-menu .term{display:none;}
-header.is-menu .term-zh{font-size:32px;margin:0;}
+header.is-menu .term-zh{background:none;color:var(--ink);font-size:32px;padding:0;margin:0;}
 
 /* ---------- 族語關鍵字 ---------- */
 .keys{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0;}
@@ -107,27 +110,27 @@ header.is-menu .term-zh{font-size:32px;margin:0;}
 
 /* ---------- 測驗 ---------- */
 .quiz{background:var(--paper);border:2px solid var(--ink);padding:24px 20px;}
-.quiz h2{font-size:15px;margin:0 0 6px;color:var(--red);font-weight:700;}
+.quiz h2{font-size:15px;margin:0 0 6px;color:var(--acc);font-weight:700;}
 .question{font-size:18px;font-weight:600;line-height:1.65;margin:0 0 20px;}
 .opt{display:flex;gap:13px;align-items:flex-start;width:100%;min-height:58px;
   padding:15px 16px;margin-bottom:10px;background:var(--bone);color:var(--ink);
   border:1.5px solid var(--line);font:inherit;font-size:16px;line-height:1.55;
   text-align:left;cursor:pointer;}
 .opt:last-of-type{margin-bottom:0;}
-.opt .mk{font-weight:700;color:var(--red);flex:none;}
+.opt .mk{font-weight:700;color:var(--acc);flex:none;}
 .opt:hover:not(:disabled){border-color:var(--ink);}
-.opt:focus-visible{outline:3px solid var(--red);outline-offset:2px;}
+.opt:focus-visible{outline:3px solid var(--acc);outline-offset:2px;}
 .opt:disabled{cursor:default;}
 .opt.wrong{background:#E9E2D6;border-color:var(--muted);color:var(--muted);}
 .opt.wrong .mk{color:var(--muted);}
 .feedback{margin:15px 0 0;font-size:15px;color:var(--muted);}
 
 /* ---------- 表單 ---------- */
-.reward{background:var(--warm);border:2px solid var(--red);padding:24px 20px;}
+.reward{background:var(--warm);border:2px solid var(--acc);padding:24px 20px;}
 .reward .head{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
 .reward h2{font-size:20px;margin:0;}
 .reward .note{color:var(--muted);font-size:15px;margin:0 0 22px;}
-.prefill{font-size:14px;color:var(--red-deep);background:var(--paper);border-left:3px solid var(--red);
+.prefill{font-size:14px;color:var(--acc);background:var(--paper);border-left:3px solid var(--acc);
   padding:10px 12px;margin:0 0 20px;line-height:1.6;}
 label{display:block;font-size:14px;font-weight:700;margin-bottom:6px;}
 input[type=text],select{width:100%;min-height:54px;padding:13px 14px;margin-bottom:18px;
@@ -135,10 +138,10 @@ input[type=text],select{width:100%;min-height:54px;padding:13px 14px;margin-bott
   font:inherit;font-size:16px;border-radius:0;-webkit-appearance:none;appearance:none;}
 select{background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);
   background-position:calc(100% - 20px) 24px,calc(100% - 14px) 24px;background-size:6px 6px;background-repeat:no-repeat;}
-input[type=text]:focus,select:focus{outline:3px solid var(--red);outline-offset:1px;border-color:var(--red);}
-.btn{width:100%;min-height:58px;border:none;background:var(--red);color:#fff;
+input[type=text]:focus,select:focus{outline:3px solid var(--acc);outline-offset:1px;border-color:var(--acc);}
+.btn{width:100%;min-height:58px;border:none;background:var(--acc);color:#fff;
   font:inherit;font-size:18px;font-weight:700;cursor:pointer;}
-.btn:hover:not(:disabled){background:var(--red-deep);}
+.btn:hover:not(:disabled){filter:brightness(.85);}
 .btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;}
 .btn:disabled{background:var(--muted);cursor:wait;}
 .btn-ghost{width:100%;min-height:52px;background:transparent;border:1.5px solid var(--ink);
@@ -179,8 +182,9 @@ input[type=text]:focus,select:focus{outline:3px solid var(--red);outline-offset:
   border:none;border-bottom:1px solid var(--line);background:transparent;
   font:inherit;text-align:left;cursor:pointer;color:var(--ink);}
 .menu-item:first-of-type{border-top:1px solid var(--line);}
+.menu-item .mk-dot{width:13px;height:13px;transform:rotate(45deg);flex:none;}
 .menu-item .n{flex:1;}
-.menu-item .t{display:block;font-size:25px;font-weight:700;color:var(--red-deep);line-height:1.2;}
+.menu-item .t{display:block;font-size:25px;font-weight:700;line-height:1.2;}
 .menu-item .z{display:block;font-size:15px;color:var(--muted);}
 .menu-item .st{flex:none;font-size:13px;color:var(--muted);}
 .menu-item .st.ok{color:var(--forest);font-weight:700;}
@@ -257,7 +261,7 @@ footer{margin-top:40px;padding:18px 0 44px;font-size:12px;color:var(--muted);tex
    1. 設定
    ============================================================ */
 const LIFF_ID  = "2011311323-Wj59NXZK";
-const BUILD    = "2026-09-13-c";   // 改版時記得更新，debug 面板會顯示，用來確認手機拿到的是新版
+const BUILD    = "2026-09-13-d";   // 改版時記得更新，debug 面板會顯示，用來確認手機拿到的是新版
 // 後端網址。搬家（ngrok → 雲端主機）只要改這一行，其他都不用動。結尾不要加斜線。
 const API_BASE = "https://noncoordinating-dexter-ingravescent.ngrok-free.dev";
 const REQUIRE_SCAN = true;  // true = 從總覽點進去只能閱讀，要現場掃 QR 才能作答集章
@@ -270,7 +274,7 @@ const ORDER = ["tower","house","archery","trap","weaving","mgaybari"];
 
 const STAGES = {
   tower:{
-    term:"Daka", termZh:"瞭望台",
+    term:"Daka", termZh:"瞭望台", accent:"#23386E",
     storyTitle:"部落的眼睛：守護家園的第一道防線",
     keys:[["Daka","瞭望台／站在高處眺望"],["Truku","山腰平台、可居之地"],["Sapah","家屋"]],
     image:"", imageHint:"瞭望台照片（建議活動前拍攝現場站台）",
@@ -287,7 +291,7 @@ const STAGES = {
   },
 
   house:{
-    term:"Sapah", termZh:"傳統家屋",
+    term:"Sapah", termZh:"傳統家屋", accent:"#94611E",
     storyTitle:"與自然共呼吸的半穴居：神聖的 Sapah",
     keys:[["Sapah","家／家屋"],["Gaya","傳統規範／祖訓"]],
     image:"img/house.jpg", imageHint:"太魯閣族傳統家屋",
@@ -303,9 +307,9 @@ const STAGES = {
   },
 
   archery:{
-    term:"Tmsamat", termZh:"射箭與狩獵",
+    term:"Smbu buji", termZh:"射箭體驗", accent:"#3860D9",
     storyTitle:"勇士的試煉：用心地與山林動物共存",
-    keys:[["Tmsamat","狩獵"],["Utux","祖靈"],["Gaya","禁忌與規範"]],
+    keys:[["Smbu buji","射箭"],["Tmsamat","狩獵"],["Utux","祖靈"],["Gaya","禁忌與規範"]],
     image:"img/archery.jpg", imageHint:"族人拉弓射箭",
     credit:"圖／新北市原住民傳藝射箭推廣協會",
     intro:[
@@ -319,23 +323,23 @@ const STAGES = {
   },
 
   trap:{
-    term:"Sluq", termZh:"陷阱狩獵",
+    term:"Powsa qlubung", termZh:"狩獵陷阱", accent:"#237A41",
     storyTitle:"借力自然：無聲的生態智慧與共享精神",
-    keys:[["Sluq","陷阱"]],
+    keys:[["Powsa qlubung","設置陷阱"],["Qlubung","陷阱"]],
     image:"img/trap.jpg", imageHint:"傳統陷阱結構",
     credit:"圖／本會拍攝。※此為布農族陷阱教學紀錄，建議活動前改拍太魯閣族現場站台",
     intro:[
-      "在茂密的森林中，太魯閣族人精通製作各種陷阱（Sluq）。他們深刻了解動物的習性與行徑路線，就地取材利用樹枝、石板的彈力與重力來設置 Sluq。",
+      "在茂密的森林中，太魯閣族人精通製作各種陷阱（Qlubung）。他們深刻了解動物的習性與行徑路線，就地取材利用樹枝、石板的彈力與重力來設置 Qlubung。",
       "這是一門高度精密的技術，不同獵物對應完全不同的陷阱構造。更重要的是，當陷阱捕獲獵物後，族人一定會將收穫帶回部落與大家分享。這份無私的共享精神，是太魯閣社會維繫情感的重要基石。"
     ],
-    question:"當太魯閣族人透過陷阱（Sluq）獲得豐收後，一定會採取什麼樣的行動來展現社會價值？",
+    question:"當太魯閣族人透過陷阱（Qlubung）獲得豐收後，一定會採取什麼樣的行動來展現社會價值？",
     options:["帶回部落與族人共享，展現互助精神","藏在山林裡作為自己的秘密糧食","拿去和其他部落交換武器"],
     answer:0,
     hint:"第二段最後提到的那份「共享精神」。"
   },
 
   weaving:{
-    term:"Tminun", termZh:"太魯閣織布",
+    term:"Tminun", termZh:"傳統織布", accent:"#DA0030",
     storyTitle:"祖靈之眼：編織生命圖騰的女力",
     keys:[["Tminun","織布"],["Ubung","地織機"],["Ptasan","紋面"],["Hakaw Utux","彩虹橋"],["Dowriq Utux","祖靈之眼"]],
     image:"img/weaving.jpg", imageHint:"太魯閣族女性使用地織機織布",
@@ -352,7 +356,7 @@ const STAGES = {
   },
 
   mgaybari:{
-    term:"Mgay Bari", termZh:"太魯閣歲時祭儀",
+    term:"Mgay Bari", termZh:"太魯閣歲時祭儀", accent:"#96271F",
     storyTitle:"Mgay Bari：向祖靈獻上最深的感謝",
     keys:[["Mgay Bari","感恩祭"],["Utux rudan","祖先的靈"],["Gaya","傳統規範"]],
     image:"img/mgaybari.jpg", imageHint:"族人身著太魯閣族服飾進行開幕祭儀",
@@ -542,6 +546,7 @@ function renderStage(){
   const prof = loadProfile();
 
   renderProgress(key);
+  document.documentElement.style.setProperty("--acc", s.accent);
   $("header").className = "";
   $("term").textContent = s.term;
   $("term-zh").textContent = s.termZh;
@@ -611,6 +616,7 @@ function renderStage(){
 function renderMenu(){
   renderProgress(null);
   const done = loadDone();
+  document.documentElement.style.setProperty("--acc", "#96271F");
   $("header").className = "is-menu";
   $("term").textContent = "Mgay Bari";
   $("term-zh").textContent = "太魯閣歲時祭儀";
@@ -622,7 +628,8 @@ function renderMenu(){
     ${ORDER.map(k=>{
       const s = STAGES[k], ok = done.includes(k);
       return `<button class="menu-item" data-k="${k}">
-        <span class="n"><span class="t truku">${esc(s.term)}</span><span class="z">${esc(s.termZh)}</span></span>
+        <span class="mk-dot" style="background:${s.accent}"></span>
+        <span class="n"><span class="t truku" style="color:${s.accent}">${esc(s.term)}</span><span class="z">${esc(s.termZh)}</span></span>
         <span class="st ${ok?"ok":""}">${ok?"已完成":"未完成"}</span>
       </button>`;
     }).join("")}
