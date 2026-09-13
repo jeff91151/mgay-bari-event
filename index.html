@@ -43,6 +43,14 @@ body{
 /* 族語（拉丁字母）專用襯線體，和中文黑體明確區隔 */
 .truku{font-family:Georgia,"Iowan Old Style",Palatino,"Times New Roman",serif;}
 
+/* ---------- 開場畫面 ---------- */
+#splash{position:fixed;inset:0;z-index:100;background:var(--bone);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  padding:24px;transition:opacity .45s ease;}
+#splash img{width:min(74vw,300px);height:auto;display:block;}
+#splash p{margin:0;font-size:14px;color:var(--muted);letter-spacing:.12em;}
+#splash.gone{opacity:0;pointer-events:none;}
+
 /* ---------- 菱形紋 ---------- */
 .p-bg{fill:var(--bone);}
 .p-ink{fill:var(--ink);}
@@ -194,6 +202,11 @@ footer{margin-top:40px;padding:18px 0 44px;font-size:12px;color:var(--muted);tex
 
 <body>
 
+<div id="splash">
+  <img src="img/splash.jpg" alt="115 年度太魯閣族 Mgay Bari 歲時祭儀暨傳藝文化推廣">
+  <p>準備中…</p>
+</div>
+
 <!-- 菱形紋 pattern 定義 -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <pattern id="pat-band" width="44" height="34" patternUnits="userSpaceOnUse">
@@ -256,19 +269,20 @@ const ORDER = ["tower","house","archery","trap","weaving","mgaybari"];
 
 const STAGES = {
   tower:{
-    term:"Puyiq", termZh:"瞭望台",
+    term:"Daka", termZh:"瞭望台",
     storyTitle:"部落的眼睛：守護家園的第一道防線",
-    keys:[["DAKA","瞭望"],["Puyiq","瞭望台"],["Sapah","家屋"]],
+    keys:[["Daka","瞭望台／站在高處眺望"],["Truku","山腰平台、可居之地"],["Sapah","家屋"]],
     image:"", imageHint:"瞭望台照片（建議活動前拍攝現場站台）",
     credit:"",
     intro:[
-      "在太魯閣族的歷史中，為了保護族人免受外敵侵襲，部落入口或制高點必定會搭建高聳的瞭望台（Puyiq）。在太魯閣語中，「DAKA」就是「站在高處眺望、瞭望」的意思。",
-      "瞭望台不僅是一座建築，更是守護 Sapah（家屋）的核心。部落青年會跟隨長輩在此輪值守夜，學習辨識風吹草動。這是青年邁向真正勇士的重要訓練，象徵著太魯閣族人團結抵禦外敵的強烈意志。"
+      "在太魯閣族的歷史中，為了保護族人免受外敵侵襲，部落入口或制高點必定會搭建高聳的瞭望台（Daka）。在太魯閣語中，「Daka」就是「站在高處眺望、瞭望」的意思。",
+      "瞭望台不僅是一座建築，更是守護 Sapah（家屋）的核心。部落青年會跟隨長輩在此輪值守夜，學習辨識風吹草動。這是青年邁向真正勇士的重要訓練，象徵著太魯閣族人團結抵禦外敵的強烈意志。",
+      "族名「Truku」本身也帶著相近的意思——山腰平台、可居之地，而這樣的地形正是防禦偷襲、設立瞭望台的首選。守望這件事，其實就寫在這個族群的名字裡。"
     ],
-    question:"太魯閣語中的「DAKA」是什麼意思，同時也是設立瞭望台的主要目的？",
+    question:"太魯閣語中的「Daka」是什麼意思，同時也是設立瞭望台的主要目的？",
     options:["觀察星象與天氣變化","站在高處瞭望，守護部落安全","儲藏部落的農作豐收"],
     answer:1,
-    hint:"答案就在第一段，DAKA 這個字的字義。"
+    hint:"答案就在第一段，Daka 這個字的字義。"
   },
 
   house:{
@@ -388,7 +402,34 @@ const TRIBES = ["太魯閣族","賽德克族","泰雅族","阿美族","布農族
 const state = { stage:null, scanned:false, userId:"", displayName:"", loggedIn:false, phraseIdx:0 };
 const $ = id => document.getElementById(id);
 
+/* 開場畫面：至少顯示 0.8 秒，避免一閃而過；最多 6 秒，避免卡死 */
+const splashAt = Date.now();
+let splashDone = false;
+function hideSplash(){
+  if (splashDone) return;
+  splashDone = true;
+  const el = $("splash");
+  if (!el) return;
+  setTimeout(()=>{
+    el.classList.add("gone");
+    setTimeout(()=> el.remove(), 500);
+  }, Math.max(0, 800 - (Date.now() - splashAt)));
+}
+setTimeout(hideSplash, 6000);
+
+/* 測試用：網址加 &reset=1 可以把本機的集章紀錄清空，重新玩一次 */
+function maybeReset(){
+  if (new URLSearchParams(location.search).get("reset") !== "1") return false;
+  try{
+    localStorage.removeItem("mb_done_v1");
+    localStorage.removeItem("mb_profile_v1");
+    localStorage.removeItem(K_QUEUE);
+  }catch(e){}
+  return true;
+}
+
 (async function start(){
+  const wasReset = maybeReset();
   try{
     await liff.init({ liffId: LIFF_ID, withLoginOnExternalBrowser:true });
     // ⚠️ init 完成後才讀參數，附加資訊這時才從 liff.state 還原
@@ -408,6 +449,8 @@ const $ = id => document.getElementById(id);
     setWho("warn","訪客模式：未透過 LINE 開啟，可閱讀但不會記錄");
   }
   render();
+  hideSplash();
+  if (wasReset) setWho("warn", "已清空本機集章紀錄，可以重新測試一次");
   setupDebug();
   flushQueue();                                  // 開頁就試著補送上次沒送成功的
   window.addEventListener("online", flushQueue); // 網路恢復再補一次
