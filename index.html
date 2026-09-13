@@ -144,6 +144,9 @@ input[type=text]:focus,select:focus{outline:3px solid var(--acc);outline-offset:
 .btn:hover:not(:disabled){filter:brightness(.85);}
 .btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;}
 .btn:disabled{background:var(--muted);cursor:wait;}
+.btn-again{margin-top:18px;}
+.again-tip{font-size:13px;color:var(--muted);margin:10px 0 0;line-height:1.6;}
+.locked .btn-again{margin-top:16px;}
 .btn-ghost{width:100%;min-height:52px;background:transparent;border:1.5px solid var(--ink);
   color:var(--ink);font:inherit;font-size:16px;font-weight:600;cursor:pointer;margin-top:22px;}
 .btn-ghost:hover{background:var(--ink);color:var(--bone);}
@@ -261,11 +264,13 @@ footer{margin-top:40px;padding:18px 0 44px;font-size:12px;color:var(--muted);tex
    1. 設定
    ============================================================ */
 const LIFF_ID  = "2011311323-Wj59NXZK";
-const BUILD    = "2026-09-13-e";   // 改版時記得更新，debug 面板會顯示，用來確認手機拿到的是新版
+const BUILD    = "2026-09-13-f";   // 改版時記得更新，debug 面板會顯示，用來確認手機拿到的是新版
 // 後端網址。搬家（ngrok → 雲端主機）只要改這一行，其他都不用動。結尾不要加斜線。
 const API_BASE = "https://noncoordinating-dexter-ingravescent.ngrok-free.dev";
 const REQUIRE_SCAN = true;  // true = 從總覽點進去只能閱讀，要現場掃 QR 才能作答集章
 const K_QUEUE  = "mb_queue_v1";   // 送不出去的資料先存這裡
+const K_SEATS  = "mb_seats_v1";   // 這支手機每站已登記幾位
+const MAX_SEATS = 4;              // 一支手機每站最多登記幾位（要和後端一致）
 
 /* ============================================================
    2. 六個導覽點（內容出自「太魯閣歲時祭儀 數位導覽與測驗內容 母語精修版」）
@@ -382,10 +387,10 @@ const AUDIO_EXT = ".m4a";
 
 const PHRASES = [
   ["Embiyax su hug?","你好嗎？"],
-  ["Embiyax ku balay.","我很好"],
+  ["Embiyax ku.","我很好"],
   ["Mhuway su balay.","謝謝你"],
   ["Ini huya!","沒關係"],
-  ["Ini ta kla.","對不起"],
+  ["Ini ta bi kla.","對不起"],
   ["Iya qsiqa!","不要客氣！"],
   ["Swayay ta han!","再見了！"],
   ["Laqi ku Truku ka yaku.","我是太魯閣族小孩"],
@@ -393,7 +398,7 @@ const PHRASES = [
   ["Piya tuki ka sayang da?","現在幾點？"],
   ["Gaga inu ka saan ngangut hug?","廁所在哪裡？"],
   ["Mha su inu?","你要去哪裡？"],
-  ["Ima ka hangan su hug?","你叫什麼名字？"],
+  ["Ima ka hangan su?","你叫什麼名字？"],
   ["Mkla ku rmgrig.","我會跳舞"],
   ["Mkla ku meuyas.","我會唱歌"],
   ["Mkla ku tminun.","我會織布"]
@@ -429,6 +434,7 @@ function maybeReset(){
     localStorage.removeItem("mb_done_v1");
     localStorage.removeItem("mb_profile_v1");
     localStorage.removeItem(K_QUEUE);
+    localStorage.removeItem(K_SEATS);
   }catch(e){}
   return true;
 }
@@ -475,6 +481,13 @@ function setWho(cls, text){
 /* 本機集章紀錄：只是讓總覽看得出進度，正式統計以後端為準 */
 function loadDone(){ try{ return JSON.parse(localStorage.getItem("mb_done_v1")||"[]"); }catch(e){ return []; } }
 function markDone(k){ try{ const a=loadDone(); if(!a.includes(k)){ a.push(k); localStorage.setItem("mb_done_v1",JSON.stringify(a)); } }catch(e){} }
+
+/* 這支手機在各站已經登記幾位，用來決定還能不能再幫人登記 */
+function loadSeats(){ try{ return JSON.parse(localStorage.getItem(K_SEATS)||"{}"); }catch(e){ return {}; } }
+function seatsOf(k){ return loadSeats()[k] || 0; }
+function bumpSeat(k){
+  try{ const m = loadSeats(); m[k] = (m[k]||0) + 1; localStorage.setItem(K_SEATS, JSON.stringify(m)); }catch(e){}
+}
 
 /* 記住姓名與族別，第二站之後自動帶入 */
 function loadProfile(){ try{ return JSON.parse(localStorage.getItem("mb_profile_v1")||"{}"); }catch(e){ return {}; } }
@@ -559,12 +572,18 @@ function renderStage(){
        ${s.credit ? `<p class="credit">${esc(s.credit)}</p>` : ""}`
     : `<div class="photo-empty">${esc(s.imageHint)}</div>`;
 
+  const seats = seatsOf(key);
   let action;
   if (done){
     action = `<div class="locked">
         <p>這一站已經完成了</p>
-        <span>可以前往下一個導覽點繼續集章</span>
-      </div>`;
+        <span>${seats < MAX_SEATS
+          ? "同行的人沒有手機嗎？可以借你的手機一起登記"
+          : `這支手機這一站已經登記 ${MAX_SEATS} 位，額滿了`}</span>
+        ${seats < MAX_SEATS ? `<button class="btn btn-again" id="again">再幫一個人登記</button>` : ""}
+      </div>
+      <section class="reward hidden" id="reward">${rewardHTML(prof, true)}</section>
+      <section class="hidden" id="done"></section>`;
   } else if (locked){
     action = `<div class="locked">
         <p>請到現場掃描這一站的 QR Code</p>
@@ -579,21 +598,7 @@ function renderStage(){
         <p class="feedback" id="feedback"></p>
       </section>
 
-      <section class="reward hidden" id="reward">
-        <div class="head">${eyeSVG(46)}<h2>答對了</h2></div>
-        <p class="note">留下基本資料，就完成這一站的集章。</p>
-        ${prof.realName ? `<p class="prefill">已帶入你上一站填的資料，直接按送出就好。要改也可以。</p>` : ""}
-        <label for="userName">真實姓名</label>
-        <input type="text" id="userName" autocomplete="name" placeholder="請輸入您的姓名" value="${esc(prof.realName||"")}">
-        <label for="userTribe">您的族別</label>
-        <select id="userTribe">
-          <option value=""${prof.tribe ? "" : " selected"} disabled>請選擇族別</option>
-          ${TRIBES.map(t=>`<option value="${esc(t)}"${prof.tribe===t?" selected":""}>${esc(t)}</option>`).join("")}
-        </select>
-        <button class="btn" id="send">送出資料</button>
-        <p class="err hidden" id="formErr"></p>
-      </section>
-
+      <section class="reward hidden" id="reward">${rewardHTML(prof, false)}</section>
       <section class="hidden" id="done"></section>`;
   }
 
@@ -608,6 +613,10 @@ function renderStage(){
   $("toMenu").addEventListener("click", goMenu);
   if (!done && !locked){
     $("quiz").querySelectorAll(".opt").forEach(b => b.addEventListener("click", ()=>answer(b,s)));
+    $("send").addEventListener("click", submit);
+  }
+  if (done && seats < MAX_SEATS){
+    $("again").addEventListener("click", addAnother);
     $("send").addEventListener("click", submit);
   }
   window.scrollTo(0,0);
@@ -644,6 +653,38 @@ function renderMenu(){
 }
 
 function goMenu(){ state.stage = null; state.scanned = false; render(); }
+
+/* 表單：答對後和「再幫一個人登記」共用同一份 */
+function rewardHTML(prof, again){
+  const n = seatsOf(state.stage);
+  return `
+    <div class="head">${eyeSVG(46)}<h2>${again ? `登記第 ${n+1} 位` : "答對了"}</h2></div>
+    <p class="note">${again
+      ? "請填寫這一位的姓名與族別。每個人都會單獨記錄。"
+      : "留下基本資料，就完成這一站的集章。"}</p>
+    ${(!again && prof.realName) ? `<p class="prefill">已帶入你上一站填的資料，直接按送出就好。要改也可以。</p>` : ""}
+    <label for="userName">真實姓名</label>
+    <input type="text" id="userName" autocomplete="${again ? "off" : "name"}" placeholder="請輸入姓名"
+           value="${again ? "" : esc(prof.realName||"")}">
+    <label for="userTribe">您的族別</label>
+    <select id="userTribe">
+      <option value=""${prof.tribe ? "" : " selected"} disabled>請選擇族別</option>
+      ${TRIBES.map(t=>`<option value="${esc(t)}"${prof.tribe===t?" selected":""}>${esc(t)}</option>`).join("")}
+    </select>
+    <button class="btn" id="send">送出資料</button>
+    <p class="err hidden" id="formErr"></p>`;
+}
+
+/* 借手機給同行的人登記 */
+function addAnother(){
+  const prof = loadProfile();
+  $("reward").innerHTML = rewardHTML(prof, true);
+  $("reward").classList.remove("hidden");
+  const done = $("done"); if (done){ done.className = "hidden"; done.innerHTML = ""; }
+  $("send").addEventListener("click", submit);
+  $("reward").scrollIntoView({behavior:"smooth", block:"start"});
+  $("userName").focus();
+}
 
 /* ---------- 族語片語 ---------- */
 function phraseHTML(caption, pin){
@@ -743,7 +784,8 @@ async function submit(){
     if (API_BASE){ await postCheckin(payload); }
     else { console.log("尚未設定 API_BASE，將送出的資料：", payload); }
     markDone(state.stage);
-    saveProfile(name, tribe);
+    bumpSeat(state.stage);
+    if (seatsOf(state.stage) === 1) saveProfile(name, tribe);  // 只記手機主人
     renderDone(name, false);
   } catch(e){
     console.error(e);
@@ -756,7 +798,8 @@ async function submit(){
     // 網路或伺服器的問題：先存起來，之後自動補送，不要卡住現場的人
     queuePush(payload);
     markDone(state.stage);
-    saveProfile(name, tribe);
+    bumpSeat(state.stage);
+    if (seatsOf(state.stage) === 1) saveProfile(name, tribe);
     renderDone(name, true);
   }
 }
@@ -771,8 +814,12 @@ function renderDone(name, pending){
     ${eyeSVG(104)}
     <h2>${esc(s.termZh)} 完成</h2>
     <p class="name">${esc(name)}</p>
-    <p class="sub">${left>0 ? `還有 ${left} 個導覽點等你` : "六個導覽點全部完成了"}</p>
+    <p class="sub">${left>0 ? `還有 ${left} 個導覽點等你` : "六個導覽點全部完成了，Mhuway su balay！"}</p>
     ${pending ? `<p class="pending">網路不太穩，資料已暫存在手機，恢復連線後會自動送出。你可以繼續下一站。</p>` : ""}
+    ${seatsOf(state.stage) < MAX_SEATS
+      ? `<button class="btn btn-again" id="again2">再幫一個人登記</button>
+         <p class="again-tip">同行的人沒有手機，可以借你的手機登記，每站最多 ${MAX_SEATS} 位。</p>`
+      : `<p class="again-tip">這支手機這一站已經登記 ${MAX_SEATS} 位，額滿了。</p>`}
 
     <div class="next">
       <h3>接下來：族語聊天室</h3>
@@ -781,6 +828,7 @@ function renderDone(name, pending){
     ${phraseHTML("把這一句帶去挑戰", s.pin)}
   `;
   bindPhrase();
+  const ag = $("again2"); if (ag) ag.addEventListener("click", addAnother);
   renderProgress(state.stage);
   el.scrollIntoView({behavior:"smooth", block:"center"});
 }
