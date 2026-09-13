@@ -155,9 +155,16 @@ input[type=text]:focus,select:focus{outline:3px solid var(--red);outline-offset:
 .phrase .cap{font-size:13px;color:#B9AE9B;margin:0 0 12px;}
 .phrase .tw{font-size:26px;line-height:1.35;margin:0;font-weight:700;color:#fff;}
 .phrase .zh{font-size:17px;margin:8px 0 0;color:#D8CEBC;}
-.phrase button{margin-top:18px;background:transparent;border:1.5px solid #6F6558;color:var(--bone);
-  font:inherit;font-size:15px;min-height:46px;padding:0 18px;cursor:pointer;}
-.phrase button:hover{border-color:var(--bone);}
+.phrase .ph-note{font-size:13px;margin:6px 0 0;color:#9E9484;}
+.ph-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.ph-play{flex:2 1 170px;min-height:54px;background:var(--bone);color:var(--ink);
+  border:none;font:inherit;font-size:16px;font-weight:700;cursor:pointer;}
+.ph-play:hover{background:#fff;}
+.ph-next{flex:1 1 120px;min-height:54px;background:transparent;border:1.5px solid #6F6558;
+  color:var(--bone);font:inherit;font-size:15px;cursor:pointer;}
+.ph-next:hover{border-color:var(--bone);}
+.ph-play:focus-visible,.ph-next:focus-visible{outline:3px solid var(--bone);outline-offset:2px;}
+.ph-tip{font-size:13px;color:#9E9484;margin:12px 0 0;line-height:1.6;}
 
 /* ---------- 總覽 ---------- */
 .menu-item{display:flex;align-items:center;gap:14px;width:100%;padding:18px 0;
@@ -348,17 +355,21 @@ const STAGES = {
 };
 
 /* ============================================================
-   3. 太魯閣生活片語
+   3. 太魯閣生活片語（附發音音檔）
+   音檔放在 audio/ 資料夾，檔名是編號：1.m4a ~ 16.m4a
    ============================================================ */
+const AUDIO_DIR = "audio";
+const AUDIO_EXT = ".m4a";
+
 const PHRASES = [
   ["Embiyax su hug?","你好嗎？"],
   ["Embiyax ku.","我很好"],
   ["Mhuway su balay.","謝謝你"],
   ["Ini huya!","沒關係"],
-  ["Ini ta bi kla.","對不起"],
+  ["Ini ta kla.","對不起"],
   ["Iya qsiqa!","不要客氣！"],
-  ["Swayay ta han!","再見了！"],
-  ["Laqi ku Truku ka yaku.","我是太魯閣族小孩"],
+  ["Swayay ta han!","再見了！","對象為多數人"],
+  ["Yaku o laqi Truku.","我是太魯閣族小孩"],
   ["Mkla ku rmngaw kari Truku.","我會說族語"],
   ["Piya tuki ka sayang da?","現在幾點？"],
   ["Gaga inu ka saan ngangut hug?","廁所在哪裡？"],
@@ -583,24 +594,63 @@ function goMenu(){ state.stage = null; state.scanned = false; render(); }
 
 /* ---------- 族語片語 ---------- */
 function phraseHTML(caption, pin){
-  state.phraseIdx = (typeof pin === "number") ? pin : Math.floor(Math.random()*PHRASES.length);
-  const [tw,zh] = PHRASES[state.phraseIdx];
+  const i = (typeof pin === "number") ? pin : Math.floor(Math.random()*PHRASES.length);
+  state.phraseIdx = i;
+  const [tw, zh, note] = PHRASES[i];
   return `<section class="phrase" id="phrase">
       <p class="cap">${esc(caption)}</p>
       <p class="tw truku" id="ph-tw">${esc(tw)}</p>
       <p class="zh" id="ph-zh">${esc(zh)}</p>
-      <button id="ph-next">再學一句</button>
+      <p class="ph-note" id="ph-note"${note ? "" : ' style="display:none"'}>${esc(note||"")}</p>
+      <div class="ph-controls">
+        <button class="ph-play" id="ph-play">▶　播放發音</button>
+        <button class="ph-next" id="ph-next">再學一句</button>
+      </div>
+      <p class="ph-tip">聽不到的話，檢查手機音量和側邊的靜音開關</p>
+      <audio id="ph-audio" preload="auto" playsinline src="${AUDIO_DIR}/${i+1}${AUDIO_EXT}"></audio>
     </section>`;
 }
+
+function setPhrase(i){
+  state.phraseIdx = i;
+  const [tw, zh, note] = PHRASES[i];
+  $("ph-tw").textContent = tw;
+  $("ph-zh").textContent = zh;
+  const n = $("ph-note");
+  n.textContent = note || "";
+  n.style.display = note ? "block" : "none";
+  const a = $("ph-audio");
+  a.pause();
+  a.src = `${AUDIO_DIR}/${i+1}${AUDIO_EXT}`;
+  a.load();
+  setPlay("▶　播放發音");
+}
+
+function setPlay(label){ const b = $("ph-play"); if (b) b.textContent = label; }
+
 function bindPhrase(){
-  const btn = $("ph-next");
-  if (!btn) return;
-  btn.addEventListener("click", ()=>{
+  const next = $("ph-next"), play = $("ph-play"), audio = $("ph-audio");
+  if (!next) return;
+
+  next.addEventListener("click", ()=>{
     let i; do { i = Math.floor(Math.random()*PHRASES.length); } while (i === state.phraseIdx && PHRASES.length>1);
-    state.phraseIdx = i;
-    $("ph-tw").textContent = PHRASES[i][0];
-    $("ph-zh").textContent = PHRASES[i][1];
+    setPhrase(i);
   });
+
+  // 手機瀏覽器一律禁止自動播放，一定要使用者自己點一下
+  play.addEventListener("click", async ()=>{
+    if (!audio.paused){ audio.pause(); audio.currentTime = 0; setPlay("▶　播放發音"); return; }
+    try{
+      setPlay("播放中…");
+      await audio.play();
+    }catch(e){
+      console.error(e);
+      setPlay("無法播放，請確認音量");
+    }
+  });
+
+  audio.addEventListener("ended", ()=> setPlay("▶　再聽一次"));
+  audio.addEventListener("error", ()=> setPlay("音檔還沒上傳"));
 }
 
 /* ---------- 互動 ---------- */
