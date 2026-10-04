@@ -105,8 +105,9 @@ figcaption{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.55;}
 .finale{padding:10px 0 20px;text-align:center;}
 .finale h2{font-size:clamp(28px,8vw,40px);margin:0;color:var(--red);}
 .finale .sub{color:var(--muted);font-size:15px;margin:8px 0 26px;}
-#cloth{display:block;width:100%;height:auto;border:2px solid var(--ink);background:var(--bone);}
-.sig{font-size:12px;color:var(--muted);margin:10px 0 0;letter-spacing:.1em;}
+#cloth{display:block;width:100%;height:auto;border:2px solid var(--ink);
+  background:var(--bone);image-rendering:-webkit-optimize-contrast;}
+.sig{font-size:13.5px;color:var(--muted);margin:14px 0 0;letter-spacing:.04em;}
 .save{display:inline-block;margin-top:22px;min-height:54px;padding:15px 28px;
   background:var(--red);color:#fff;border:none;font:inherit;font-size:16px;font-weight:700;
   cursor:pointer;text-decoration:none;}
@@ -379,12 +380,13 @@ function render(){
       <div class="wrap finale">
         <h2 class="rise">Your cloth</h2>
         <p class="sub rise">Woven, row by row, while you read.</p>
-        <canvas id="cloth" class="rise"></canvas>
-        <p class="sig rise">PATTERN ${SIG}</p>
+        <img id="cloth" class="rise" alt="The cloth you wove while reading">
         <p class="note rise">No two hand-woven Truku cloths carry the same diamonds —
-           some sharp, some rounded, each one the hand of its weaver. The pattern above
-           was made for this visit only. Reload the page and it will be a different one.</p>
-        <a class="save rise" id="save" download="truku-cloth.png">Save your cloth</a>
+           some sharp, some rounded, each one the hand of its weaver. This one was woven
+           for your visit only; reload the page and you will get a different one.</p>
+        <p class="sig rise">Yours is pattern ${SIG}</p>
+        <button class="save rise" id="save" type="button">Save your cloth</button>
+        <p class="note rise" id="savehint" style="display:none"></p>
       </div>
     </section>
 
@@ -466,12 +468,15 @@ function tick(force){
 /* ============================================================
    成品 — 放大版，可以存下來
    ============================================================ */
+let clothBlob = null;
+
 function drawCloth(){
-  const cv = $("#cloth");
-  const w = Math.min(cv.parentElement.clientWidth, 640), h = 150;
-  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const img = $("#cloth");
+  if (!img) return;
+  const w = Math.min(img.parentElement.clientWidth, 640), h = 150;
+  const dpr = 2;                                   // 存下來的圖固定 2 倍解析度
+  const cv = document.createElement("canvas");     // 離屏繪製，最後輸出成圖片
   cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
-  cv.style.height = h + "px";
   const ctx = cv.getContext("2d");
   ctx.fillStyle = BONE; ctx.fillRect(0,0,cv.width,cv.height);
   // 把六段顏色平均分佈成條紋，和底部那條同一套花紋
@@ -480,7 +485,39 @@ function drawCloth(){
     const seg = Math.min(TOPICS.length-1, Math.floor(x / w * TOPICS.length));
     weaveColumn(ctx, x, h, TOPICS[seg].acc, dpr, vp);
   }
-  try{ $("#save").href = cv.toDataURL("image/png"); }catch(e){ $("#save").style.display="none"; }
+  // 用 <img> 呈現：手機長按才會出現「儲存影像」，canvas 不會
+  try{ img.src = cv.toDataURL("image/png"); }catch(e){}
+  if (cv.toBlob) cv.toBlob(b => { clothBlob = b; }, "image/png");
+}
+
+/* 存檔：手機走原生分享，桌機走下載，都不行就提示長按 */
+function setupSave(){
+  const btn = $("#save"), hint = $("#savehint");
+  if (!btn) return;
+  btn.addEventListener("click", async ()=>{
+    const blob = clothBlob;
+    if (blob && navigator.canShare){
+      try{
+        const file = new File([blob], "truku-cloth.png", {type:"image/png"});
+        if (navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:"My Truku cloth"});
+          return;
+        }
+      }catch(e){ if (e && e.name === "AbortError") return; }
+    }
+    if (blob && "download" in document.createElement("a")){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "truku-cloth.png";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 2000);
+      hint.textContent = "Nothing saved? Press and hold the cloth above and choose Save Image.";
+      hint.style.display = "";
+      return;
+    }
+    hint.textContent = "Press and hold the cloth above, then choose Save Image.";
+    hint.style.display = "";
+  });
 }
 
 /* 開場的示範織帶 */
@@ -593,6 +630,7 @@ renderPhrase(Math.floor(Math.random()*PHRASES.length));
 heroLoom();
 setupLoom();
 drawCloth();
+setupSave();
 
 const io = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{
