@@ -107,7 +107,13 @@ figcaption{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.55;}
 .finale .sub{color:var(--muted);font-size:15px;margin:8px 0 26px;}
 #cloth{display:block;width:100%;height:auto;border:2px solid var(--ink);
   background:var(--bone);image-rendering:-webkit-optimize-contrast;}
-.sig{font-size:13.5px;color:var(--muted);margin:14px 0 0;letter-spacing:.04em;}
+.savehint{font-size:13.5px;color:var(--muted);margin:16px 0 0;}
+.savehint .touch{display:inline;}
+.savehint .mouse{display:none;}
+@media (hover:hover) and (pointer:fine){
+  .savehint .touch{display:none;}
+  .savehint .mouse{display:inline;}
+}
 .save{display:inline-block;margin-top:22px;min-height:54px;padding:15px 28px;
   background:var(--red);color:#fff;border:none;font:inherit;font-size:16px;font-weight:700;
   cursor:pointer;text-decoration:none;}
@@ -310,8 +316,6 @@ const SEED = {
   pupil  : Math.random() < 0.65,                // 有沒有中心點
   stripe : Math.random() < 0.5                  // 有沒有邊線
 };
-const SIG = (SEED.period.toString(36) + Math.round(SEED.edge*999).toString(36)
-           + Math.round(SEED.core*999).toString(36)).toUpperCase();
 
 /* 回傳某一格的顏色。
    x = 第幾條緯線，y = 布幅上的位置，vp = 垂直週期（織帶一排、成品堆疊好幾排） */
@@ -384,9 +388,11 @@ function render(){
         <p class="note rise">No two hand-woven Truku cloths carry the same diamonds —
            some sharp, some rounded, each one the hand of its weaver. This one was woven
            for your visit only; reload the page and you will get a different one.</p>
-        <p class="sig rise">Yours is pattern ${SIG}</p>
-        <button class="save rise" id="save" type="button">Save your cloth</button>
-        <p class="note rise" id="savehint" style="display:none"></p>
+        <p class="savehint rise">
+          <span class="touch">Press and hold the cloth to save it.</span>
+          <span class="mouse">Right-click the cloth to save it.</span>
+        </p>
+        <button class="save rise" id="save" type="button" hidden>Share your cloth</button>
       </div>
     </section>
 
@@ -490,33 +496,23 @@ function drawCloth(){
   if (cv.toBlob) cv.toBlob(b => { clothBlob = b; }, "image/png");
 }
 
-/* 存檔：手機走原生分享，桌機走下載，都不行就提示長按 */
+/* 長按／右鍵存圖是主要方式，到處都能用。
+   只有在系統真的支援檔案分享時，才額外多給一顆分享按鈕，
+   不會留一顆按了沒反應的死按鈕。 */
 function setupSave(){
-  const btn = $("#save"), hint = $("#savehint");
-  if (!btn) return;
+  const btn = $("#save");
+  if (!btn || !navigator.canShare) return;
+  try{
+    const probe = new File([new Blob()], "t.png", {type:"image/png"});
+    if (!navigator.canShare({files:[probe]})) return;
+  }catch(e){ return; }
+  btn.hidden = false;
   btn.addEventListener("click", async ()=>{
-    const blob = clothBlob;
-    if (blob && navigator.canShare){
-      try{
-        const file = new File([blob], "truku-cloth.png", {type:"image/png"});
-        if (navigator.canShare({files:[file]})){
-          await navigator.share({files:[file], title:"My Truku cloth"});
-          return;
-        }
-      }catch(e){ if (e && e.name === "AbortError") return; }
-    }
-    if (blob && "download" in document.createElement("a")){
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = "truku-cloth.png";
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 2000);
-      hint.textContent = "Nothing saved? Press and hold the cloth above and choose Save Image.";
-      hint.style.display = "";
-      return;
-    }
-    hint.textContent = "Press and hold the cloth above, then choose Save Image.";
-    hint.style.display = "";
+    if (!clothBlob) return;
+    try{
+      const file = new File([clothBlob], "truku-cloth.png", {type:"image/png"});
+      await navigator.share({files:[file], title:"My Truku cloth"});
+    }catch(e){ /* 使用者取消或系統不給，長按那條路還在 */ }
   });
 }
 
