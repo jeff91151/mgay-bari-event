@@ -65,8 +65,12 @@ body{
 .wrap{max-width:620px;margin:0 auto;padding:0 20px;}
 
 /* ---------- 活動識別 ---------- */
-.masthead{padding:28px 16px 20px;}
+.masthead{padding:28px 16px 14px;}
 .masthead img{display:block;width:100%;max-width:460px;height:auto;margin:0 auto;}
+.langbar{text-align:center;margin:0;padding:0 16px 18px;}
+.langbar a{display:inline-block;font-size:13px;color:var(--muted);text-decoration:none;
+  border:1px solid var(--line);background:var(--paper);padding:7px 16px;letter-spacing:.03em;}
+.langbar a:hover{color:var(--ink);border-color:var(--ink);}
 
 /* ---------- 進度 ---------- */
 .progress{display:flex;align-items:center;gap:14px;padding:26px 0 18px;}
@@ -234,6 +238,7 @@ footer{margin-top:40px;padding:18px 0 44px;font-size:12px;color:var(--muted);tex
 <div class="wrap masthead">
   <img src="mgay-bari-logo.png" alt="Mgay Bari" width="1000" height="147">
 </div>
+<p class="langbar"><a href="en.html">English version</a></p>
 
 <svg class="band" aria-hidden="true" focusable="false"><rect width="100%" height="34" fill="url(#pat-band)"/></svg>
 
@@ -264,7 +269,7 @@ footer{margin-top:40px;padding:18px 0 44px;font-size:12px;color:var(--muted);tex
    1. 設定
    ============================================================ */
 const LIFF_ID  = "2011311323-Wj59NXZK";
-const BUILD    = "2026-10-02-a";   // 改版時記得更新，debug 面板會顯示，用來確認手機拿到的是新版
+const BUILD    = "2026-10-04-a";   // 改版時記得更新，debug 面板會顯示，用來確認手機拿到的是新版
 // 後端網址。搬家（ngrok → 雲端主機）只要改這一行，其他都不用動。結尾不要加斜線。
 const API_BASE = "https://noncoordinating-dexter-ingravescent.ngrok-free.dev";
 const REQUIRE_SCAN = true;  // true = 從總覽點進去只能閱讀，要現場掃 QR 才能作答集章
