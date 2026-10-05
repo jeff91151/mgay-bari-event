@@ -39,6 +39,10 @@ body{
 }
 .truku{font-family:Georgia,"Iowan Old Style",Palatino,"Times New Roman",serif;}
 .wrap{max-width:660px;margin:0 auto;padding:0 22px;}
+.langtop{position:absolute;top:14px;right:14px;z-index:60;margin:0;}
+.langtop a{font-size:12.5px;color:var(--muted);text-decoration:none;
+  border:1px solid var(--line);background:var(--bone);padding:6px 13px;}
+.langtop a:hover{color:var(--ink);border-color:var(--ink);}
 
 /* ========== 開場 ========== */
 .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;
@@ -176,6 +180,8 @@ footer a{color:var(--muted);}
 </style>
 </head>
 <body>
+
+<p class="langtop"><a href="index.html">中文版</a></p>
 
 <header class="hero">
   <svg class="eye" viewBox="0 0 100 100" aria-hidden="true">
